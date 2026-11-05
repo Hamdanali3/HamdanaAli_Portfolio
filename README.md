@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hamdan Ali — Flagship Engineering Portfolio
 
-## Getting Started
+Personal engineering portfolio of **Hamdan Ali** — Software Engineer, Full-Stack Systems Architect, and Applied ML Security Researcher (**BS Software Engineering, Air University, Islamabad** · **HindukushSoft Technologies** Internship Alumnus).
 
-First, run the development server:
+Built from the ground up around a **"Swiss Editorial × High-Altitude Control Instrument"** design language documented in [`ULTRA_MASTER_PROMPT.md`](./ULTRA_MASTER_PROMPT.md).
+
+---
+
+## Highlights & Interactive Systems
+
+- **12-Layer Compositor Choreography:** Session-smart calibration preloader, DPR-scaled HTML5 2D Hindu Kush topographic `<canvas>`, masked baseline typography reveals, spring-physics magnetic controls, contextual cursor reticle, native CSS `animation-timeline: scroll(root)` progress bar, and scroll-velocity capability marquee.
+- **4 Live Interactive System Simulators:**
+  1. **Sentinel Chitral** — 8-valley GLOF/landslide risk selector, HTTP 503 fail-safe contract demo, and 500-token FCM multicast batch dispatcher.
+  2. **GridPulse** — Live 5-second MW fleet readout (`Golen Gol 108 MW`, `Lawi 69 MW`, Solar & Wind) + closed-loop `Alert → Acknowledge → Work Order → Auto-Resolve` state machine.
+  3. **Edge-IIoTset & PP-PSFE** — Interactive comparison between raw artifact-leaked benchmarks and leakage-sanitized 62-feature `XGBoost` (`96.49%` accuracy, `3.54 ms / 1k` flows).
+  4. **UniSelection v2.0** — Real-time multi-criterion eligibility calculator across `284` accredited HEC & global institutions with `SHA-256` sync parity.
+- **Modern Web Platform Architecture:** Same-document View Transitions (`document.startViewTransition`) with programmatic heading focus routing, native top-layer `<dialog closedby="any">` modals (`⌘K` / `Ctrl+K` Command Palette & Case Study Drawer) with cross-browser exit & backdrop fallbacks, and zero-FOUC CSS `light-dark()` tri-state theming (**Obsidian Dark** / **Archival Paper Light** / **System**).
+
+---
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack, Static Prerendering) + React 19
+- **Language:** TypeScript (Strict)
+- **Styling:** Tailwind CSS v4 + Native CSS `light-dark()`, `@starting-style`, `animation-timeline: scroll()`
+- **Motion & Graphics:** `motion` (`motion/react`), HTML5 2D Canvas, View Transitions API
+- **Icons:** `lucide-react` + custom SVG marks
+
+---
+
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to explore the portfolio locally.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Production Verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx tsc --noEmit
+npm run lint
+npm run build
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Contact
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **GitHub:** [@Hamdanali3](https://github.com/Hamdanali3)
+- **Email:** [Hamdanaly651@gmail.com](mailto:Hamdanaly651@gmail.com)
