@@ -1,26 +1,274 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Raw palette values for progressive fallback + light-dark() composition */
+  --bg-canvas-light: #f6f4ef;
+  --bg-canvas-dark: #08090b;
+
+  --bg-surface-1-light: #efece4;
+  --bg-surface-1-dark: #101216;
+
+  --bg-surface-2-light: #e5e1d6;
+  --bg-surface-2-dark: #161920;
+
+  --bg-elevated-light: rgba(255, 253, 248, 0.84);
+  --bg-elevated-dark: rgba(16, 18, 22, 0.82);
+
+  --border-hairline-light: rgba(17, 19, 23, 0.11);
+  --border-hairline-dark: rgba(255, 255, 255, 0.085);
+
+  --border-strong-light: rgba(17, 19, 23, 0.22);
+  --border-strong-dark: rgba(255, 255, 255, 0.18);
+
+  --text-primary-light: #111317;
+  --text-primary-dark: #f3f2ee;
+
+  --text-secondary-light: #474e5d;
+  --text-secondary-dark: #9ca3af;
+
+  --text-muted-light: #6d7484;
+  --text-muted-dark: #68707e;
+
+  --accent-signal-light: #d9380b;
+  --accent-signal-dark: #ff4f1f;
+
+  --accent-telemetry-light: #047857;
+  --accent-telemetry-dark: #10b981;
+
+  --accent-champagne-light: #785f33;
+  --accent-champagne-dark: #d8c7a8;
+
+  --scrollbar-thumb-light: #b8b3a6;
+  --scrollbar-thumb-dark: #2c313c;
+  --scrollbar-track-light: #efece4;
+  --scrollbar-track-dark: #0c0e12;
+
+  /* Baseline fallback before light-dark() */
+  --bg-canvas: var(--bg-canvas-light);
+  --bg-surface-1: var(--bg-surface-1-light);
+  --bg-surface-2: var(--bg-surface-2-light);
+  --bg-elevated: var(--bg-elevated-light);
+  --border-hairline: var(--border-hairline-light);
+  --border-strong: var(--border-strong-light);
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  --text-muted: var(--text-muted-light);
+  --accent-signal: var(--accent-signal-light);
+  --accent-telemetry: var(--accent-telemetry-light);
+  --accent-champagne: var(--accent-champagne-light);
+  --scrollbar-thumb: var(--scrollbar-thumb-light);
+  --scrollbar-track: var(--scrollbar-track-light);
+
+  @media (prefers-color-scheme: dark) {
+    --bg-canvas: var(--bg-canvas-dark);
+    --bg-surface-1: var(--bg-surface-1-dark);
+    --bg-surface-2: var(--bg-surface-2-dark);
+    --bg-elevated: var(--bg-elevated-dark);
+    --border-hairline: var(--border-hairline-dark);
+    --border-strong: var(--border-strong-dark);
+    --text-primary: var(--text-primary-dark);
+    --text-secondary: var(--text-secondary-dark);
+    --text-muted: var(--text-muted-dark);
+    --accent-signal: var(--accent-signal-dark);
+    --accent-telemetry: var(--accent-telemetry-dark);
+    --accent-champagne: var(--accent-champagne-dark);
+    --scrollbar-thumb: var(--scrollbar-thumb-dark);
+    --scrollbar-track: var(--scrollbar-track-dark);
+  }
+
+  /* Native light-dark() tokens responding automatically to color-scheme */
+  @supports (color: light-dark(white, black)) {
+    --bg-canvas: light-dark(var(--bg-canvas-light), var(--bg-canvas-dark));
+    --bg-surface-1: light-dark(var(--bg-surface-1-light), var(--bg-surface-1-dark));
+    --bg-surface-2: light-dark(var(--bg-surface-2-light), var(--bg-surface-2-dark));
+    --bg-elevated: light-dark(var(--bg-elevated-light), var(--bg-elevated-dark));
+    --border-hairline: light-dark(var(--border-hairline-light), var(--border-hairline-dark));
+    --border-strong: light-dark(var(--border-strong-light), var(--border-strong-dark));
+    --text-primary: light-dark(var(--text-primary-light), var(--text-primary-dark));
+    --text-secondary: light-dark(var(--text-secondary-light), var(--text-secondary-dark));
+    --text-muted: light-dark(var(--text-muted-light), var(--text-muted-dark));
+    --accent-signal: light-dark(var(--accent-signal-light), var(--accent-signal-dark));
+    --accent-telemetry: light-dark(var(--accent-telemetry-light), var(--accent-telemetry-dark));
+    --accent-champagne: light-dark(var(--accent-champagne-light), var(--accent-champagne-dark));
+    --scrollbar-thumb: light-dark(var(--scrollbar-thumb-light), var(--scrollbar-thumb-dark));
+    --scrollbar-track: light-dark(var(--scrollbar-track-light), var(--scrollbar-track-dark));
+  }
+
+  /* MANDATORY: Viewport-wide adaptive color-scheme mapped to <meta name="color-scheme"> */
+  color-scheme: light dark;
+  accent-color: var(--accent-signal);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+
+  &:has(> head > meta[name="color-scheme"][content="dark"]) {
+    color-scheme: dark;
+  }
+
+  &:has(> head > meta[name="color-scheme"][content="light"]) {
+    color-scheme: light;
+  }
+}
+
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: var(--bg-canvas);
+  --color-surface-1: var(--bg-surface-1);
+  --color-surface-2: var(--bg-surface-2);
+  --color-elevated: var(--bg-elevated);
+  --color-hairline: var(--border-hairline);
+  --color-strong: var(--border-strong);
+  --color-ink: var(--text-primary);
+  --color-ink-secondary: var(--text-secondary);
+  --color-ink-muted: var(--text-muted);
+  --color-signal: var(--accent-signal);
+  --color-telemetry: var(--accent-telemetry);
+  --color-champagne: var(--accent-champagne);
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument), Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  @media (prefers-reduced-motion: reduce) {
+    scroll-behavior: auto;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: clip;
+}
+
+::selection {
+  background-color: var(--accent-signal);
+  color: #ffffff;
+}
+
+/* Tabular precision numbers for telemetry, metrics & clocks */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Focus-visible accessibility ring */
+:focus-visible {
+  outline: 2px solid var(--accent-signal);
+  outline-offset: 3px;
+}
+
+/* Subtle tactile architectural grain overlay */
+.film-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.028;
+}
+
+/* Architectural Swiss grid backdrop */
+.architectural-grid {
+  background-size: 64px 64px;
+  background-image:
+    linear-gradient(to right, var(--border-hairline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border-hairline) 1px, transparent 1px);
+}
+
+/* Native CSS Scroll-Driven Progress Indicator */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    @keyframes grow-scroll-progress {
+      from {
+        transform: scaleX(0);
+      }
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    .scroll-progress-native {
+      transform-origin: 0 50%;
+      animation: grow-scroll-progress auto linear;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+/* Top-Layer <dialog> Discrete Entry & Exit Choreography */
+dialog.portfolio-dialog {
+  opacity: 0;
+  transform: translateY(14px) scale(0.975);
+  transition-property: opacity, transform, display, overlay;
+  transition-duration: 0.28s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-behavior: allow-discrete;
+}
+
+dialog.portfolio-dialog::backdrop {
+  background-color: rgba(5, 6, 8, 0);
+  backdrop-filter: blur(0px);
+  transition-property: background-color, backdrop-filter, display, overlay;
+  transition-duration: 0.28s;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  transition-behavior: allow-discrete;
+}
+
+:is(dialog.portfolio-dialog[open]):where(:not([data-closing])) {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(14px) scale(0.975);
+  }
+
+  &::backdrop {
+    background-color: rgba(5, 6, 8, 0.72);
+    backdrop-filter: blur(8px);
+
+    @starting-style {
+      background-color: rgba(5, 6, 8, 0);
+      backdrop-filter: blur(0px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.portfolio-dialog {
+    transform: none;
+    transition-duration: 0.1s;
+  }
+
+  :is(dialog.portfolio-dialog[open]):where(:not([data-closing])) {
+    transform: none;
+
+    @starting-style {
+      transform: none;
+    }
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* View Transition aspect-ratio stabilization */
+.vt-fit-title {
+  width: fit-content;
 }

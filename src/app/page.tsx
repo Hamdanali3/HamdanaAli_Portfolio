@@ -1,69 +1,147 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { CalibrationPreloader } from "@/components/chrome/CalibrationPreloader";
+import { CustomCursor } from "@/components/chrome/CustomCursor";
+import { ScrollProgressAndSpine } from "@/components/chrome/ScrollProgressAndSpine";
+import { NavbarDock, type ThemeChoice } from "@/components/chrome/NavbarDock";
+import { CommandPalette } from "@/components/chrome/CommandPalette";
+import { HeroSection } from "@/components/hero/HeroSection";
+import { VelocityMarquee } from "@/components/sections/VelocityMarquee";
+import { WorkShowcase } from "@/components/sections/WorkShowcase";
+import { ResearchSpotlight } from "@/components/sections/ResearchSpotlight";
+import { ArchitectureBento } from "@/components/sections/ArchitectureBento";
+import { JourneyTimeline } from "@/components/sections/JourneyTimeline";
+import { ContactFooter } from "@/components/sections/ContactFooter";
+import { CaseStudyDialog } from "@/components/sections/CaseStudyDialog";
+import type { PortfolioProject } from "@/data/portfolio";
+import { runViewTransition } from "@/lib/utils";
+
+const themeListeners = new Set<() => void>();
+
+function subscribeTheme(listener: () => void) {
+  themeListeners.add(listener);
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === "color-scheme") {
+      const meta = document.querySelector<HTMLMetaElement>('meta[name="color-scheme"]');
+      if (meta) {
+        meta.content =
+          e.newValue === "dark" || e.newValue === "light" ? e.newValue : "light dark";
+      }
+      listener();
+    }
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    themeListeners.delete(listener);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+function getThemeSnapshot(): ThemeChoice {
+  try {
+    const val = localStorage.getItem("color-scheme");
+    if (val === "dark" || val === "light") return val;
+  } catch {
+    // Ignore restricted storage
+  }
+  return "system";
+}
+
+function getThemeServerSnapshot(): ThemeChoice {
+  return "system";
+}
+
+export default function PortfolioPage() {
+  const [activeSection, setActiveSection] = useState("overview");
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
+  const [transitionProjectId, setTransitionProjectId] = useState<string | null>(null);
+
+  const themeChoice = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot
+  );
+
+  const handleSelectTheme = useCallback((choice: ThemeChoice) => {
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="color-scheme"]');
+    if (meta) {
+      meta.content = choice === "system" ? "light dark" : choice;
+    }
+    try {
+      if (choice === "system") {
+        localStorage.removeItem("color-scheme");
+      } else {
+        localStorage.setItem("color-scheme", choice);
+      }
+    } catch {
+      // Ensure theme still applies to page even if localStorage throws
+    }
+    themeListeners.forEach((l) => l());
+  }, []);
+
+  // Global Cmd+K / Ctrl+K shortcut for Command Palette
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const handleOpenProject = useCallback((project: PortfolioProject) => {
+    setTransitionProjectId(project.id);
+    requestAnimationFrame(() => {
+      runViewTransition(() => {
+        setSelectedProject(project);
+      }, "#case-study-heading");
+    });
+  }, []);
+
+  const handleCloseProject = useCallback(() => {
+    setSelectedProject(null);
+    setTransitionProjectId(null);
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      <CalibrationPreloader />
+      <CustomCursor />
+      <ScrollProgressAndSpine onSectionChange={setActiveSection} />
+
+      <NavbarDock
+        activeSection={activeSection}
+        onOpenCommandPalette={() => setCommandOpen(true)}
+        themeChoice={themeChoice}
+        onSelectTheme={handleSelectTheme}
+      />
+
+      <main id="main-content" className="flex-1">
+        <HeroSection onOpenCommandPalette={() => setCommandOpen(true)} />
+        <VelocityMarquee />
+        <WorkShowcase
+          activeTransitionProjectId={transitionProjectId}
+          onOpenProject={handleOpenProject}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+        <ResearchSpotlight />
+        <ArchitectureBento onOpenProject={handleOpenProject} />
+        <JourneyTimeline />
       </main>
-    </div>
+
+      <ContactFooter />
+
+      <CaseStudyDialog project={selectedProject} onClose={handleCloseProject} />
+
+      <CommandPalette
+        open={commandOpen}
+        onClose={() => setCommandOpen(false)}
+        onSelectProject={handleOpenProject}
+        onSelectTheme={handleSelectTheme}
+      />
+    </>
   );
 }
