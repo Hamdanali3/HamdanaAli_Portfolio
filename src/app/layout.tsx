@@ -5,6 +5,13 @@ import {
   JetBrains_Mono,
   Noto_Nastaliq_Urdu,
 } from "next/font/google";
+import {
+  DEFAULT_OG_IMAGE,
+  SITE_NAME,
+  SITE_URL,
+  absoluteUrl,
+  buildSiteGraphJsonLd,
+} from "@/lib/site";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -36,13 +43,11 @@ const notoNastaliqUrdu = Noto_Nastaliq_Urdu({
   weight: ["400", "700"],
 });
 
-const SITE_URL = "https://hamdana-ali-portfolio.vercel.app";
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Hamdan Ali — Full-Stack Developer · AI-Powered Products",
+  title: "Hamdan Ali | Full-Stack Developer · AI-Powered Products",
   description:
-    "Portfolio of Hamdan Ali — Full-Stack Developer building AI-powered web applications, Flutter mobile apps, and reliable backend APIs (Sentinel Chitral, GridPulse, UniSelection v2.0). BS Software Engineering at Air University Islamabad.",
+    "Portfolio of Hamdan Ali: Full-Stack Developer building AI-powered web applications, Flutter mobile apps, and reliable backend APIs (Sentinel Chitral, GridPulse, UniSelection v2.0). BS Software Engineering at Air University Islamabad.",
   keywords: [
     "Hamdan Ali",
     "Full-Stack Developer",
@@ -61,49 +66,54 @@ export const metadata: Metadata = {
   authors: [{ name: "Hamdan Ali", url: "https://github.com/Hamdanali3" }],
   creator: "Hamdan Ali",
   alternates: {
-    canonical: SITE_URL,
+    canonical: absoluteUrl("/"),
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon",
   },
   openGraph: {
-    title: "Hamdan Ali — Full-Stack Developer · AI-Powered Products",
+    title: "Hamdan Ali | Full-Stack Developer · AI-Powered Products",
     description:
-      "Full-Stack Developer building AI-powered web platforms, Flutter mobile apps, and resilient cloud APIs — from Chitral hazard alerts to university admissions software.",
-    url: SITE_URL,
-    siteName: "Hamdan Ali Portfolio",
+      "Full-Stack Developer building AI-powered web platforms, Flutter mobile apps, and resilient cloud APIs, from Chitral hazard alerts to university admissions software.",
+    url: absoluteUrl("/"),
+    siteName: SITE_NAME,
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: "Hamdan Ali: Full-Stack Developer building AI-powered web and mobile products",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hamdan Ali — Full-Stack Developer · AI-Powered Products",
+    title: "Hamdan Ali | Full-Stack Developer · AI-Powered Products",
     description:
       "Full-Stack Developer building AI-powered web platforms, Flutter mobile apps, and resilient cloud APIs.",
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        alt: "Hamdan Ali: Full-Stack Developer building AI-powered web and mobile products",
+      },
+    ],
   },
 };
 
-const initHeadScript = `try{var s=localStorage.getItem("color-scheme");if(s==="light"||s==="dark"){var m=document.querySelector('meta[name="color-scheme"]');if(m)m.content=s;}if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches&&sessionStorage.getItem("ha_greeting_seen_v2")!=="1"){document.documentElement.dataset.greeting="active";}}catch(e){}`;
+const initHeadScript = `try{var s=localStorage.getItem("color-scheme");if(s==="light"||s==="dark"){var m=document.querySelector('meta[name="color-scheme"]');if(m)m.content=s;}}catch(e){}`;
 
-const personJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Hamdan Ali",
-  alternateName: "ہمدان علی",
-  url: SITE_URL,
-  email: "mailto:Hamdanaly651@gmail.com",
-  jobTitle: "Full-Stack Developer",
-  description: "Full-Stack Developer building AI-powered web and mobile products.",
-  alumniOf: {
-    "@type": "Organization",
-    name: "HindukushSoft Technologies",
-  },
-  affiliation: {
-    "@type": "CollegeOrUniversity",
-    name: "Air University, Islamabad",
-  },
-  knowsLanguage: ["ur", "en"],
-  sameAs: ["https://github.com/Hamdanali3"],
-};
+const siteGraphJsonLd = buildSiteGraphJsonLd();
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
@@ -115,7 +125,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: initHeadScript }} />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteGraphJsonLd) }}
         />
       </head>
       <body className="min-h-full flex flex-col relative selection:bg-signal-fill selection:text-white">

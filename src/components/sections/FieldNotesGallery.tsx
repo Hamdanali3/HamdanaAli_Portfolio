@@ -2,8 +2,9 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "motion/react";
+import Link from "next/link";
 import {
+  ArrowUpRight,
   Calendar,
   ChevronLeft,
   ChevronRight,
@@ -27,7 +28,6 @@ interface GallerySlide {
   role: string;
   description: string;
   tags: string[];
-  isPlaceholder: boolean;
   src: string;
   alt: string;
   width: number;
@@ -36,8 +36,10 @@ interface GallerySlide {
 
 export function FieldNotesGallery({
   events = EVENTS,
+  hideHeader = false,
 }: {
   events?: PortfolioEvent[];
+  hideHeader?: boolean;
 }) {
   const [activeTag, setActiveTag] = useState<string>("All");
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
@@ -75,7 +77,6 @@ export function FieldNotesGallery({
           role: ev.role,
           description: ev.description,
           tags: ev.tags,
-          isPlaceholder: ev.id.startsWith("placeholder-"),
           src: img.src,
           alt: img.alt,
           width: img.width ?? 1200,
@@ -95,7 +96,6 @@ export function FieldNotesGallery({
 
   const openLightboxByEvent = useCallback(
     (eventId: string) => {
-      // Switch filter to All if current filter hides this event
       const idxInFiltered = filteredSlides.findIndex((s) => s.eventId === eventId);
       if (idxInFiltered >= 0) {
         setLightboxIdx(idxInFiltered);
@@ -183,38 +183,50 @@ export function FieldNotesGallery({
   return (
     <section
       id="field-notes"
-      aria-labelledby="field-notes-heading"
-      className="relative border-b border-hairline bg-surface-1/25 py-20 sm:py-28"
+      aria-labelledby={hideHeader ? undefined : "field-notes-heading"}
+      aria-label={hideHeader ? "Field Notes and Event Gallery" : undefined}
+      className="relative border-b border-hairline bg-surface-1/25 py-16 sm:py-24"
     >
       <div className="mx-auto max-w-[1340px] px-4 sm:px-8 space-y-14">
         {/* Section Editorial Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
-              <span>CHAPTER 03 · FIELD NOTES &amp; GALLERY ARCHIVE</span>
+        {!hideHeader && (
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+                <span>CHAPTER 03 · FIELD NOTES &amp; GALLERY ARCHIVE</span>
+              </div>
+              <h2
+                id="field-notes-heading"
+                className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.035em] leading-[1.04] text-ink"
+              >
+                <RevealText text="Demos, launches &" as="span" />{" "}
+                <span className="font-serif italic font-normal text-signal">
+                  moments
+                </span>{" "}
+                <RevealText text="from the build log." as="span" delay={0.06} />
+              </h2>
             </div>
-            <h2
-              id="field-notes-heading"
-              className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.035em] leading-[1.04] text-ink"
-            >
-              <RevealText text="Demos, hackathons &" as="span" />{" "}
-              <span className="font-serif italic font-normal text-signal">
-                moments
-              </span>{" "}
-              <RevealText text="from the build log." as="span" delay={0.06} />
-            </h2>
-          </div>
 
-          <p className="max-w-md text-sm leading-relaxed text-ink-secondary">
-            Highlights from campus showcases, internship reviews, community meetups, and shipped
-            product milestones. Driven from a single typed file at{" "}
-            <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-ink">
-              /content/events.ts
-            </code>
-            .
-          </p>
-        </div>
+            <div className="max-w-md space-y-2">
+              <p className="text-sm leading-relaxed text-ink-secondary">
+                Highlights from campus showcases, internship reviews, and shipped
+                product milestones. Driven from a single typed file at{" "}
+                <code className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-ink">
+                  /content/events.ts
+                </code>
+                .
+              </p>
+              <Link
+                href="/field-notes"
+                className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-signal hover:underline underline-offset-4"
+              >
+                <span>Open Dedicated Field Notes Page (/field-notes)</span>
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* PART 1: Top 5 Highlights Strip (Shows ONLY featured: true events) */}
         {topHighlights.length > 0 && (
@@ -233,7 +245,6 @@ export function FieldNotesGallery({
               {topHighlights.map((ev, index) => {
                 const cover = ev.images[0];
                 const isWide = index < 2;
-                const isPlaceholder = ev.id.startsWith("placeholder-");
 
                 return (
                   <SpotlightCard
@@ -261,7 +272,7 @@ export function FieldNotesGallery({
                             alt={cover.alt}
                             width={cover.width ?? 1200}
                             height={cover.height ?? 800}
-                            loading="lazy"
+                            loading={index < 2 ? "eager" : "lazy"}
                             sizes={
                               isWide
                                 ? "(max-width: 768px) 92vw, (max-width: 1200px) 48vw, 630px"
@@ -269,15 +280,10 @@ export function FieldNotesGallery({
                             }
                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                           />
-                          <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+                          <div className="absolute top-3 left-3 flex items-center gap-2">
                             <span className="rounded-full bg-black/70 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-md">
                               0{index + 1} · HIGHLIGHT
                             </span>
-                            {isPlaceholder && (
-                              <span className="rounded-full border border-[#ff8b66]/50 bg-black/75 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-[#ff8b66] backdrop-blur-md">
-                                Placeholder
-                              </span>
-                            )}
                           </div>
                         </div>
                       )}
@@ -365,58 +371,51 @@ export function FieldNotesGallery({
 
           {/* Responsive Masonry Columns */}
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 space-y-5">
-            <AnimatePresence mode="popLayout">
-              {filteredSlides.map((slide, idx) => (
-                <motion.figure
-                  key={slide.key}
-                  layout
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  className="break-inside-avoid overflow-hidden rounded-2xl border border-hairline bg-surface-1"
+            {filteredSlides.map((slide, idx) => (
+              <figure
+                key={slide.key}
+                className="break-inside-avoid overflow-hidden rounded-2xl border border-hairline bg-surface-1"
+              >
+                <button
+                  type="button"
+                  onClick={() => setLightboxIdx(idx)}
+                  aria-label={`Open ${slide.eventTitle} photo in lightbox`}
+                  data-cursor-label="LIGHTBOX"
+                  className="group relative block w-full text-left cursor-pointer focus:outline-none"
                 >
-                  <button
-                    type="button"
-                    onClick={() => setLightboxIdx(idx)}
-                    aria-label={`Open ${slide.eventTitle} photo in lightbox`}
-                    data-cursor-label="LIGHTBOX"
-                    className="group relative block w-full text-left cursor-pointer focus:outline-none"
-                  >
-                    <div className="relative w-full overflow-hidden bg-surface-2">
-                      <Image
-                        src={slide.src}
-                        alt={slide.alt}
-                        width={slide.width}
-                        height={slide.height}
-                        loading="lazy"
-                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 415px"
-                        className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.025]"
-                      />
+                  <div className="relative w-full overflow-hidden bg-surface-2">
+                    <Image
+                      src={slide.src}
+                      alt={slide.alt}
+                      width={slide.width}
+                      height={slide.height}
+                      loading="lazy"
+                      sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 415px"
+                      className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.025]"
+                    />
+                  </div>
+                  <figcaption className="p-4 space-y-1.5 border-t border-hairline">
+                    <div className="flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted">
+                      <span>{slide.role}</span>
+                      <span>{slide.date}</span>
                     </div>
-                    <figcaption className="p-4 space-y-1.5 border-t border-hairline">
-                      <div className="flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted">
-                        <span>{slide.role}</span>
-                        <span>{slide.date}</span>
-                      </div>
-                      <div className="text-sm font-bold text-ink group-hover:text-signal transition-colors duration-200">
-                        {slide.eventTitle}
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {slide.tags.map((t) => (
-                          <span
-                            key={t}
-                            className="rounded-full border border-hairline bg-canvas px-2 py-0.5 font-mono text-[10px] text-ink-muted"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </figcaption>
-                  </button>
-                </motion.figure>
-              ))}
-            </AnimatePresence>
+                    <div className="text-sm font-bold text-ink group-hover:text-signal transition-colors duration-200">
+                      {slide.eventTitle}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {slide.tags.map((t) => (
+                        <span
+                          key={t}
+                          className="rounded-full border border-hairline bg-canvas px-2 py-0.5 font-mono text-[10px] text-ink-muted"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </figcaption>
+                </button>
+              </figure>
+            ))}
           </div>
         </div>
       </div>

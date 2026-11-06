@@ -1,72 +1,29 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import {
-  motion,
-  useAnimationFrame,
-  useMotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-  useVelocity,
-} from "motion/react";
+import React, { useState } from "react";
 import { Pause, Play } from "lucide-react";
 import { MARQUEE_CAPABILITIES } from "@/data/portfolio";
+import { cn } from "@/lib/utils";
 
 function MarqueeTrack({
   items,
-  baseVelocity,
+  direction,
   paused,
 }: {
   items: string[];
-  baseVelocity: number;
+  direction: "left" | "right";
   paused: boolean;
 }) {
-  const prefersReduced = useReducedMotion();
-  const baseX = useMotionValue(0);
-  const { scrollY } = useScroll();
-  const scrollVelocity = useVelocity(scrollY);
-  const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 360 });
-  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 3.2], {
-    clamp: false,
-  });
-
-  const directionRef = useRef<number>(1);
-  const hoveredRef = useRef<boolean>(false);
-
-  useAnimationFrame((_, delta) => {
-    if (prefersReduced || paused || hoveredRef.current) return;
-
-    let moveBy = directionRef.current * baseVelocity * (delta / 1000);
-    const vf = velocityFactor.get();
-    if (vf < 0) directionRef.current = -1;
-    else if (vf > 0) directionRef.current = 1;
-
-    moveBy += directionRef.current * moveBy * Math.min(Math.abs(vf), 4);
-
-    let next = baseX.get() + moveBy;
-    if (next <= -50) next += 50;
-    if (next > 0) next -= 50;
-    baseX.set(next);
-  });
-
-  const xTransform = useTransform(baseX, (v) => `${v}%`);
   const repeated = [...items, ...items];
 
   return (
-    <div
-      onMouseEnter={() => {
-        hoveredRef.current = true;
-      }}
-      onMouseLeave={() => {
-        hoveredRef.current = false;
-      }}
-      className="overflow-hidden py-2"
-    >
-      <motion.div
-        style={{ x: prefersReduced ? "0%" : xTransform }}
-        className="flex w-max items-center gap-4 will-change-transform"
+    <div className="overflow-hidden py-2">
+      <div
+        className={cn(
+          "flex w-max items-center gap-4 will-change-transform",
+          direction === "left" ? "marquee-track-left" : "marquee-track-right",
+          paused && "marquee-paused"
+        )}
       >
         {repeated.map((item, idx) => (
           <div
@@ -77,11 +34,11 @@ function MarqueeTrack({
               {item}
             </span>
             <span aria-hidden="true" className="font-mono text-xs text-signal">
-              ✦
+              ·
             </span>
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -104,8 +61,8 @@ export function VelocityMarquee() {
           aria-pressed={paused}
           aria-label={
             paused
-              ? "Paused — resume capability ticker"
-              : "Live — pause capability ticker"
+              ? "Paused: resume capability ticker"
+              : "Live: pause capability ticker"
           }
           className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-surface-1 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted hover:text-ink transition-colors cursor-pointer"
         >
@@ -118,10 +75,10 @@ export function VelocityMarquee() {
         </button>
       </div>
 
-      <MarqueeTrack items={MARQUEE_CAPABILITIES} baseVelocity={-2.2} paused={paused} />
+      <MarqueeTrack items={MARQUEE_CAPABILITIES} direction="left" paused={paused} />
       <MarqueeTrack
         items={[...MARQUEE_CAPABILITIES].reverse()}
-        baseVelocity={1.9}
+        direction="right"
         paused={paused}
       />
     </section>

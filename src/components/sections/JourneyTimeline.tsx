@@ -1,85 +1,64 @@
-"use client";
-
-import React, { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
-import { ArrowUpRight, CheckCircle2, MapPin } from "lucide-react";
+import React from "react";
+import Link from "next/link";
+import { ArrowUpRight, CheckCircle2, Layers, MapPin } from "lucide-react";
 import { JOURNEY } from "@/data/portfolio";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { RevealText } from "@/components/ui/RevealText";
 
-export function JourneyTimeline() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const prefersReduced = useReducedMotion();
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 75%", "end 75%"],
-  });
-
-  const scaleY = useSpring(scrollYProgress, {
-    stiffness: 260,
-    damping: 34,
-    restDelta: 0.001,
-  });
-
+export function JourneyTimeline({ hideHeader = false }: { hideHeader?: boolean }) {
   return (
     <section
       id="journey"
-      aria-labelledby="journey-heading"
-      className="relative border-b border-hairline bg-surface-1/25 py-20 sm:py-28"
+      aria-labelledby={hideHeader ? undefined : "journey-heading"}
+      aria-label={hideHeader ? "Engineering Journey and Education Timeline" : undefined}
+      className="relative border-b border-hairline bg-surface-1/25 py-16 sm:py-24"
     >
       <div className="mx-auto max-w-[1340px] px-4 sm:px-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-14">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
-              <span>CHAPTER 05 · ENGINEERING JOURNEY &amp; MILESTONES</span>
+        {!hideHeader && (
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-14">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+                <span>CHAPTER 05 · ENGINEERING JOURNEY &amp; MILESTONES</span>
+              </div>
+              <h2
+                id="journey-heading"
+                className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.035em] leading-[1.04] text-ink"
+              >
+                <RevealText text="Consistent" as="span" />{" "}
+                <span className="font-serif italic font-normal text-signal">
+                  shipping
+                </span>{" "}
+                <RevealText text="& steady growth." as="span" delay={0.05} />
+              </h2>
             </div>
-            <h2
-              id="journey-heading"
-              className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.035em] leading-[1.04] text-ink"
-            >
-              <RevealText text="Consistent" as="span" />{" "}
-              <span className="font-serif italic font-normal text-signal">
-                shipping
-              </span>{" "}
-              <RevealText text="& steady growth." as="span" delay={0.05} />
-            </h2>
+            <div className="max-w-md space-y-2">
+              <p className="text-sm leading-relaxed text-ink-secondary">
+                From undergraduate software engineering at Air University Islamabad to full-stack
+                internship builds at HindukushSoft Technologies and live regional products.
+              </p>
+              <Link
+                href="/journey"
+                className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-signal hover:underline underline-offset-4"
+              >
+                <span>Open Dedicated Journey Page (/journey)</span>
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           </div>
-          <p className="max-w-md text-sm leading-relaxed text-ink-secondary">
-            From undergraduate software engineering at Air University Islamabad to full-stack
-            internship builds at HindukushSoft Technologies and live regional products.
-          </p>
-        </div>
+        )}
 
         {/* Timeline Spine + Cards */}
-        <div ref={containerRef} className="relative pl-6 sm:pl-12">
+        <div className="relative pl-6 sm:pl-12">
           <div
             aria-hidden="true"
-            className="absolute left-[9px] sm:left-[19px] top-2 bottom-2 w-[2px] bg-hairline"
-          />
-
-          <motion.div
-            aria-hidden="true"
-            style={{ scaleY: prefersReduced ? 1 : scaleY }}
-            className="absolute left-[9px] sm:left-[19px] top-2 bottom-2 w-[2px] origin-top bg-signal"
+            className="absolute left-[9px] sm:left-[19px] top-2 bottom-2 w-[2px] bg-signal/60"
           />
 
           <div className="space-y-8">
-            {JOURNEY.map((item, idx) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{
-                  duration: 0.34,
-                  delay: Math.min(0.12, idx * 0.04),
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="relative"
-              >
+            {JOURNEY.map((item) => (
+              <div key={item.title} className="relative">
                 <span
                   aria-hidden="true"
                   className="absolute -left-[22px] sm:-left-[36px] top-6 flex h-4 w-4 items-center justify-center rounded-full border-2 border-signal bg-canvas"
@@ -110,18 +89,30 @@ export function JourneyTimeline() {
                         <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-ink">
                           {item.title}
                         </h3>
-                        {item.linkUrl && (
-                          <a
-                            href={item.linkUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-cursor-label="OPEN ↗"
-                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-canvas px-4 py-2 font-mono text-[11px] font-medium text-ink hover:border-signal hover:text-signal transition-colors duration-200"
-                          >
-                            <span>{item.linkLabel}</span>
-                            <ArrowUpRight className="h-3 w-3" />
-                          </a>
-                        )}
+                        <div className="flex flex-wrap items-center gap-2">
+                          {item.internalRoute && (
+                            <Link
+                              href={item.internalRoute}
+                              data-cursor-label="CASE STUDY ↗"
+                              className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-surface-2 border border-strong px-4 py-2 font-mono text-[11px] font-semibold text-ink hover:border-signal hover:text-signal transition-colors duration-200"
+                            >
+                              <Layers className="h-3 w-3 text-signal" />
+                              <span>{item.internalRouteLabel ?? "Case Study"}</span>
+                            </Link>
+                          )}
+                          {item.linkUrl && (
+                            <a
+                              href={item.linkUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              data-cursor-label="OPEN ↗"
+                              className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-canvas px-4 py-2 font-mono text-[11px] font-medium text-ink hover:border-signal hover:text-signal transition-colors duration-200"
+                            >
+                              <span>{item.linkLabel}</span>
+                              <ArrowUpRight className="h-3 w-3" />
+                            </a>
+                          )}
+                        </div>
                       </div>
 
                       <p className="text-sm leading-[1.7] text-ink-secondary">
@@ -142,7 +133,7 @@ export function JourneyTimeline() {
                     </div>
                   </div>
                 </SpotlightCard>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

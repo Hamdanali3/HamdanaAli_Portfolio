@@ -21,7 +21,7 @@ export interface PortfolioEvent {
 /* ============================================================================
  * READY-TO-COPY TEMPLATE ENTRY
  * 1. Drop your event photo(s) into `/public/events/` (e.g., `/public/events/devfest-isb-1.jpg`).
- * 2. Copy the block below into `EVENTS`, fill in the fields, and remove placeholder entries.
+ * 2. Copy the block below into `EVENTS` and fill in your event details.
  * 3. Set `featured: true` on up to 5 events to feature them in the "Top 5 Highlights" strip.
  *    If `EVENTS` is `[]`, the entire Field Notes section hides automatically.
  * ============================================================================
@@ -47,103 +47,103 @@ export interface PortfolioEvent {
 
 export const EVENTS: PortfolioEvent[] = [
   {
-    id: "placeholder-ai-demo-day",
-    title: "[Placeholder] AI & Full-Stack Product Demo Day",
-    date: "2026 · Replace Date",
-    location: "Air University · Islamabad",
-    role: "Lead Full-Stack Builder",
+    id: "sentinel-chitral-launch",
+    title: "Sentinel Chitral Early-Warning Platform Launch",
+    date: "2026",
+    location: "Chitral & Islamabad, Pakistan",
+    role: "Creator & Full-Stack Developer",
     description:
-      "Placeholder highlight — swap with your real hackathon or product demo note and photo in /public/events/.",
-    tags: ["Demos & Talks", "AI Products"],
+      "Shipped regional GLOF, landslide, and severe weather push alerts across eight Hindu Kush valleys with MapLibre GL, batched 500-token FCM multicast, and a Groq safety assistant.",
+    tags: ["Shipped", "AI Products"],
     featured: true,
     images: [
       {
         src: "/events/placeholder-01.jpg",
-        alt: "Placeholder frame for AI and full-stack product demo day presentation",
+        alt: "Sentinel Chitral early-warning platform telemetry card showing 8 valleys monitored and HTTP 503 fail-safe contract",
         width: 1200,
         height: 800,
       },
       {
         src: "/events/placeholder-06.jpg",
-        alt: "Placeholder frame for team whiteboard and API sprint session",
+        alt: "TaskFlow dual-surface Laravel 12 and PHP 8.3 Sanctum REST API engineering summary card",
         width: 1200,
         height: 800,
       },
     ],
   },
   {
-    id: "placeholder-uni-expo",
-    title: "[Placeholder] Software Engineering Project Showcase",
-    date: "2026 · Replace Date",
-    location: "FCAI · Air University Islamabad",
-    role: "Presenter · BSSE Track",
+    id: "uniselection-release-gates",
+    title: "UniSelection v2.0 Release & SHA-256 Sync Verification",
+    date: "2026",
+    location: "Air University · Islamabad",
+    role: "Lead Mobile & Python Developer",
     description:
-      "Placeholder highlight — add photos from semester exhibitions, poster sessions, or live app walkthroughs.",
-    tags: ["University", "Demos & Talks"],
+      "Cleared 8/8 Phase 2 release gates with 40/40 passing Flutter widget/unit tests, 10/10 Pytest sync checks, and cryptographic SHA-256 dataset parity across 284 accredited institutions.",
+    tags: ["Shipped", "University"],
     featured: true,
     images: [
       {
         src: "/events/placeholder-02.jpg",
-        alt: "Placeholder vertical frame for Air University software engineering showcase",
-        width: 960,
-        height: 1120,
+        alt: "UniSelection v2.0 release verification summary showing 284 institutions and 40/40 passing Flutter tests",
+        width: 1200,
+        height: 800,
       },
     ],
   },
   {
-    id: "placeholder-hindukushsoft-capstone",
-    title: "[Placeholder] GridPulse Capstone Review — HindukushSoft",
-    date: "2026 · Replace Date",
+    id: "hindukushsoft-gridpulse-capstone",
+    title: "GridPulse Week 8 Capstone Review: HindukushSoft",
+    date: "2026",
     location: "Chitral / Remote, Pakistan",
-    role: "Full-Stack Intern",
+    role: "Full-Stack Developer Intern",
     description:
-      "Placeholder highlight — replace with moments from your 8-week HindukushSoft internship and Week 8 GridPulse review.",
+      "Presented the browser-based renewable fleet control room modeling Chitral's 108 MW Golen Gol and 69 MW Lawi hydro plants, solar/wind sites, Kanban work orders, and PulseBot AI.",
     tags: ["Internship", "Shipped"],
     featured: true,
     images: [
       {
         src: "/events/placeholder-03.jpg",
-        alt: "Placeholder frame for GridPulse renewable fleet capstone engineering review",
+        alt: "GridPulse renewable fleet control room capstone review card showing 177+ MW telemetry and 30 backend tests",
         width: 1200,
         height: 800,
       },
     ],
   },
   {
-    id: "placeholder-sentinel-briefing",
-    title: "[Placeholder] Sentinel Chitral Early-Warning Walkthrough",
-    date: "2026 · Replace Date",
-    location: "Chitral & Islamabad",
-    role: "Creator & Full-Stack Developer",
+    id: "edge-iiotset-pp-psfe-study",
+    title: "Edge-IIoTset & PP-PSFE Full-Stack ML Security Study",
+    date: "Oct 2026",
+    location: "FCAI · Air University Islamabad",
+    role: "Author & Full-Stack Builder",
     description:
-      "Placeholder highlight — replace with field photos, valley telemetry testing, or community feedback sessions.",
-    tags: ["Shipped", "AI Products"],
+      "Audited 157,800 IoT network flows, engineered 24 privacy-preserving protocol-header descriptors, and deployed the 96.49%-accurate XGBoost pipeline via Flask REST API and Angular 22.",
+    tags: ["AI Products", "Demos & Talks"],
     featured: true,
     images: [
       {
         src: "/events/placeholder-04.jpg",
-        alt: "Placeholder frame for Sentinel Chitral regional hazard alert briefing",
+        alt: "Edge-IIoTset and PP-PSFE security study summary card showing 96.49% accuracy and 3.54 ms per 1,000 flows",
         width: 1200,
-        height: 900,
+        height: 800,
       },
     ],
   },
   {
-    id: "placeholder-dev-community",
-    title: "[Placeholder] Islamabad Builders & Tech Meetup",
-    date: "2026 · Replace Date",
+    id: "air-university-crm-showcase",
+    title: "BS Software Engineering Full-Stack & CRM Showcase",
+    date: "2026",
     location: "Islamabad, Pakistan",
-    role: "Attendee & Builder",
+    role: "BSSE Undergraduate Builder",
     description:
-      "Placeholder highlight — replace with developer meetups, GDG/AWS/AI community events, or workshops.",
-    tags: ["Community", "University"],
+      "Demonstrated the custom React & TypeScript Customer Relationship Management (CRM) term application and multi-view pipeline state architecture at Air University.",
+    tags: ["University", "Demos & Talks"],
     featured: true,
     images: [
       {
         src: "/events/placeholder-05.jpg",
-        alt: "Placeholder vertical frame for Islamabad developer community meetup",
-        width: 960,
-        height: 1080,
+        alt: "Air University FCAI full-stack web and custom CRM showcase summary card",
+        width: 1200,
+        height: 800,
       },
     ],
   },

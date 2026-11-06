@@ -1,72 +1,71 @@
-"use client";
-
 import React from "react";
-import { motion } from "motion/react";
+import Link from "next/link";
 import { ArrowUpRight, ExternalLink, FileText, Layers } from "lucide-react";
 import { GitHubMark } from "@/components/ui/GitHubMark";
-import { PROJECTS, type PortfolioProject } from "@/data/portfolio";
+import { PROJECTS } from "@/data/portfolio";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { RevealText } from "@/components/ui/RevealText";
 import { ProjectSimulator } from "@/components/simulators/ProjectSimulators";
 import { cn } from "@/lib/utils";
 
 interface WorkShowcaseProps {
-  activeTransitionProjectId: string | null;
-  onOpenProject: (project: PortfolioProject) => void;
+  hideHeader?: boolean;
 }
 
-export function WorkShowcase({
-  activeTransitionProjectId,
-  onOpenProject,
-}: WorkShowcaseProps) {
+export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
   const featured = PROJECTS.filter((p) => p.featured);
   const archive = PROJECTS.filter((p) => !p.featured);
 
   return (
     <section
       id="work"
-      aria-labelledby="work-heading"
-      className="relative border-b border-hairline py-20 sm:py-28"
+      aria-labelledby={hideHeader ? undefined : "work-heading"}
+      aria-label={hideHeader ? "Selected Work and Case Studies" : undefined}
+      className="relative border-b border-hairline py-16 sm:py-24"
     >
       <div className="mx-auto max-w-[1340px] px-4 sm:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-14">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
-              <span>CHAPTER 02 · SHIPPED PRODUCTS &amp; ARCHITECTURES</span>
+        {!hideHeader && (
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-14">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+                <span>CHAPTER 02 · SHIPPED PRODUCTS &amp; ARCHITECTURES</span>
+              </div>
+              <h2
+                id="work-heading"
+                className="text-[clamp(2rem,4.2vw,3.75rem)] font-extrabold tracking-[-0.035em] leading-[1.03] text-ink"
+              >
+                <RevealText text="Shipped products &" as="span" />{" "}
+                <span className="font-serif italic font-normal text-signal">
+                  interactive
+                </span>{" "}
+                <RevealText text="previews." as="span" delay={0.06} />
+              </h2>
             </div>
-            <h2
-              id="work-heading"
-              className="text-[clamp(2rem,4.2vw,3.75rem)] font-extrabold tracking-[-0.035em] leading-[1.03] text-ink"
-            >
-              <RevealText text="Shipped products &" as="span" />{" "}
-              <span className="font-serif italic font-normal text-signal">
-                interactive
-              </span>{" "}
-              <RevealText text="previews." as="span" delay={0.06} />
-            </h2>
+            <div className="max-w-md space-y-2">
+              <p className="text-sm leading-relaxed text-ink-secondary">
+                Every featured card embeds a live interactive preview modeled on the real codebase.
+                Open any project page to inspect its architecture, test metrics, and repository links.
+              </p>
+              <Link
+                href="/work"
+                className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-signal hover:underline underline-offset-4"
+              >
+                <span>Browse All 6 Project URLs (/work)</span>
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
           </div>
-          <p className="max-w-md text-sm leading-relaxed text-ink-secondary">
-            Every featured card embeds a live interactive preview modeled on the real codebase.
-            Open any project to inspect its architecture, test metrics, and repository links.
-          </p>
-        </div>
+        )}
 
         {/* 4 Flagship Interactive Case Studies */}
         <div className="space-y-10">
           {featured.map((project, idx) => {
             const isEven = idx % 2 === 1;
-            const isTransitioning = activeTransitionProjectId === project.id;
 
             return (
-              <motion.article
-                key={project.id}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-              >
+              <article key={project.id}>
                 <SpotlightCard showFiducials className="p-6 sm:p-8 lg:p-10">
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
                     {/* Narrative Column */}
@@ -86,15 +85,13 @@ export function WorkShowcase({
                       </div>
 
                       <div>
-                        <h3
-                          style={
-                            isTransitioning
-                              ? { viewTransitionName: "case-study-active-title" }
-                              : undefined
-                          }
-                          className="vt-fit-title text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-ink"
-                        >
-                          {project.title}
+                        <h3 className="text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-ink">
+                          <Link
+                            href={`/work/${project.id}`}
+                            className="hover:text-signal transition-colors"
+                          >
+                            {project.title}
+                          </Link>
                         </h3>
                         <p className="mt-1 font-serif italic text-lg sm:text-xl text-ink-secondary">
                           {project.subtitle}
@@ -136,16 +133,15 @@ export function WorkShowcase({
 
                       {/* Action Buttons (>= 44px tap targets) */}
                       <div className="flex flex-wrap items-center gap-2.5 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => onOpenProject(project)}
-                          data-cursor-label="OPEN CASE ↗"
-                          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-xs font-semibold text-canvas transition-transform duration-200 hover:scale-[1.02] cursor-pointer"
+                        <Link
+                          href={`/work/${project.id}`}
+                          data-cursor-label="READ CASE ↗"
+                          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-xs font-semibold text-canvas transition-transform duration-200 hover:scale-[1.02]"
                         >
                           <Layers className="h-3.5 w-3.5 text-signal" />
-                          <span>View Case Study</span>
+                          <span>Read Case Study</span>
                           <ArrowUpRight className="h-3.5 w-3.5" />
-                        </button>
+                        </Link>
 
                         {project.liveUrl && (
                           <a
@@ -205,7 +201,7 @@ export function WorkShowcase({
                     </div>
                   </div>
                 </SpotlightCard>
-              </motion.article>
+              </article>
             );
           })}
         </div>
@@ -214,66 +210,63 @@ export function WorkShowcase({
         <div className="mt-14 pt-12 border-t border-hairline">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-ink-muted">
-              INTERNSHIP &amp; FULL-STACK ARCHIVE (05 — 06)
+              INTERNSHIP &amp; FULL-STACK ARCHIVE (05 - 06)
             </h3>
             <span className="font-mono text-[11px] text-ink-muted">
-              Click any card for implementation details
+              Open any card to view its dedicated case study page
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {archive.map((proj) => {
-              const isTransitioning = activeTransitionProjectId === proj.id;
-              return (
-                <SpotlightCard
-                  key={proj.id}
-                  enableTilt
-                  cursorLabel="INSPECT ↗"
-                  onClick={() => onOpenProject(proj)}
-                  className="p-6 sm:p-7 cursor-pointer"
-                >
-                  <div className="flex flex-col justify-between h-full space-y-5">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between font-mono text-[11px]">
-                        <span className="text-signal font-semibold">
-                          {proj.index} {"//"} {proj.accentTag}
-                        </span>
-                        <ArrowUpRight className="h-4 w-4 text-ink-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-signal" />
-                      </div>
-                      <h4
-                        style={
-                          isTransitioning
-                            ? { viewTransitionName: "case-study-active-title" }
-                            : undefined
-                        }
-                        className="vt-fit-title text-xl font-bold tracking-tight text-ink"
+            {archive.map((proj) => (
+              <SpotlightCard
+                key={proj.id}
+                enableTilt
+                cursorLabel="READ CASE ↗"
+                className="p-6 sm:p-7"
+              >
+                <div className="flex flex-col justify-between h-full space-y-5">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between font-mono text-[11px]">
+                      <span className="text-signal font-semibold">
+                        {proj.index} · {proj.accentTag}
+                      </span>
+                      <ArrowUpRight className="h-4 w-4 text-ink-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-signal" />
+                    </div>
+                    <h4 className="text-xl font-bold tracking-tight text-ink">
+                      <Link
+                        href={`/work/${proj.id}`}
+                        className="hover:text-signal transition-colors"
                       >
                         {proj.title}
-                      </h4>
-                      <p className="text-sm leading-relaxed text-ink-secondary">
-                        {proj.summary}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4">
-                      <div className="flex flex-wrap gap-1.5">
-                        {proj.stack.slice(0, 4).map((t) => (
-                          <span
-                            key={t}
-                            className="rounded-full border border-hairline bg-canvas px-2.5 py-0.5 font-mono text-[10px] text-ink-muted"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                      <span className="font-mono text-[11px] font-semibold text-ink">
-                        View Case →
-                      </span>
-                    </div>
+                      </Link>
+                    </h4>
+                    <p className="text-sm leading-relaxed text-ink-secondary">
+                      {proj.summary}
+                    </p>
                   </div>
-                </SpotlightCard>
-              );
-            })}
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4">
+                    <div className="flex flex-wrap gap-1.5">
+                      {proj.stack.slice(0, 4).map((t) => (
+                        <span
+                          key={t}
+                          className="rounded-full border border-hairline bg-canvas px-2.5 py-0.5 font-mono text-[10px] text-ink-muted"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <Link
+                      href={`/work/${proj.id}`}
+                      className="font-mono text-[11px] font-semibold text-ink hover:text-signal transition-colors"
+                    >
+                      Read Case Study →
+                    </Link>
+                  </div>
+                </div>
+              </SpotlightCard>
+            ))}
           </div>
         </div>
       </div>

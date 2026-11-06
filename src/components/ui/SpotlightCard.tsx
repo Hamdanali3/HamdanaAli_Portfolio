@@ -1,13 +1,6 @@
 "use client";
 
 import React, { useRef } from "react";
-import {
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useSpring,
-  useReducedMotion,
-} from "motion/react";
 import { cn } from "@/lib/utils";
 
 interface SpotlightCardProps {
@@ -28,69 +21,56 @@ export function SpotlightCard({
   onClick,
 }: SpotlightCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const prefersReduced = useReducedMotion();
-
-  const mouseX = useMotionValue(-400);
-  const mouseY = useMotionValue(-400);
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-
-  const springRotateX = useSpring(rotateX, { stiffness: 260, damping: 28 });
-  const springRotateY = useSpring(rotateY, { stiffness: 260, damping: 28 });
-
-  const spotlightSheen = useMotionTemplate`radial-gradient(520px circle at ${mouseX}px ${mouseY}px, rgba(255, 79, 31, 0.09), transparent 72%)`;
-  const borderGlow = useMotionTemplate`radial-gradient(340px circle at ${mouseX}px ${mouseY}px, var(--border-strong), transparent 75%)`;
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!cardRef.current || e.pointerType !== "mouse") return;
-    const rect = cardRef.current.getBoundingClientRect();
+    const el = cardRef.current;
+    if (!el || e.pointerType !== "mouse") return;
+    const rect = el.getBoundingClientRect();
     const localX = e.clientX - rect.left;
     const localY = e.clientY - rect.top;
-    mouseX.set(localX);
-    mouseY.set(localY);
+    el.style.setProperty("--spot-x", `${localX}px`);
+    el.style.setProperty("--spot-y", `${localY}px`);
 
-    if (enableTilt && !prefersReduced) {
+    if (enableTilt) {
       const pctX = (localX / rect.width - 0.5) * 2;
       const pctY = (localY / rect.height - 0.5) * 2;
-      rotateX.set(-pctY * 2.4);
-      rotateY.set(pctX * 2.4);
+      el.style.transform = `perspective(1100px) rotateX(${(-pctY * 2.1).toFixed(2)}deg) rotateY(${(pctX * 2.1).toFixed(2)}deg)`;
     }
   };
 
   const handlePointerLeave = () => {
-    mouseX.set(-400);
-    mouseY.set(-400);
-    rotateX.set(0);
-    rotateY.set(0);
+    const el = cardRef.current;
+    if (!el) return;
+    el.style.setProperty("--spot-x", "-400px");
+    el.style.setProperty("--spot-y", "-400px");
+    if (enableTilt) {
+      el.style.transform = "";
+    }
   };
 
   return (
-    <motion.div
+    <div
       ref={cardRef}
       data-cursor-label={cursorLabel}
       onClick={onClick}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      style={
-        enableTilt && !prefersReduced
-          ? {
-              rotateX: springRotateX,
-              rotateY: springRotateY,
-              transformPerspective: 1100,
-            }
-          : undefined
-      }
+      style={{
+        ["--spot-x" as string]: "-400px",
+        ["--spot-y" as string]: "-400px",
+      }}
       className={cn(
-        "group relative rounded-2xl border border-hairline bg-surface-1 transition-colors duration-300",
+        "group relative rounded-2xl border border-hairline bg-surface-1 transition-[border-color,background-color,transform] duration-200 ease-out",
         className
       )}
     >
       {/* Specular pointer-tracked border ring */}
-      <motion.div
+      <div
         aria-hidden="true"
         className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{
-          background: borderGlow,
+          background:
+            "radial-gradient(340px circle at var(--spot-x) var(--spot-y), var(--border-strong), transparent 75%)",
           WebkitMask:
             "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
           WebkitMaskComposite: "xor",
@@ -100,10 +80,13 @@ export function SpotlightCard({
       />
 
       {/* Ambient radial spotlight */}
-      <motion.div
+      <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: spotlightSheen }}
+        style={{
+          background:
+            "radial-gradient(520px circle at var(--spot-x) var(--spot-y), rgba(255, 79, 31, 0.085), transparent 72%)",
+        }}
       />
 
       {showFiducials && (
@@ -124,6 +107,6 @@ export function SpotlightCard({
       )}
 
       <div className="relative z-10 h-full">{children}</div>
-    </motion.div>
+    </div>
   );
 }

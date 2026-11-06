@@ -368,3 +368,66 @@ dialog.portfolio-dialog::backdrop {
     filter: none !important;
   }
 }
+
+
+@keyframes marquee-left {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.marquee-track-left {
+  animation: marquee-left 36s linear infinite;
+}
+
+.marquee-track-right {
+  animation: marquee-right 40s linear infinite;
+}
+
+.marquee-track-left:hover,
+.marquee-track-right:hover,
+.marquee-paused {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track-left,
+  .marquee-track-right {
+    animation: none !important;
+  }
+}
+
+@keyframes identity-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.animate-identity-enter {
+  animation: identity-enter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-identity-enter {
+    animation: none !important;
+  }
+}

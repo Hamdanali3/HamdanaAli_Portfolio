@@ -1,63 +1,64 @@
-# Hamdan Ali — Portfolio
+# Hamdan Ali · Portfolio
 
-Personal portfolio of **Hamdan Ali** (`@Hamdanali3`) — **Full-Stack Developer · AI-Powered Products** (BS Software Engineering student at **Air University, Islamabad** · **HindukushSoft Technologies** internship alumnus).
+Personal portfolio of **Hamdan Ali** (`@Hamdanali3`), **Full-Stack Developer · AI-Powered Products** (BS Software Engineering student at **Air University, Islamabad** · **HindukushSoft Technologies** internship alumnus).
 
 Live site: [https://hamdana-ali-portfolio.vercel.app/](https://hamdana-ali-portfolio.vercel.app/)
 
 ---
 
-## Key Features
+## Multi-Page URL & SEO Architecture
 
-- **Multilingual Urdu → English First-Load Greeting:** Displays `"ہمدان علی"` (`lang="ur"`, `dir="rtl"`, `Noto Nastaliq Urdu`) → `"میں ہمدان علی ہوں"` → `"I am Hamdan Ali"` before settling into the Hero with zero layout shift (`CLS = 0`). Skippable via click or `Esc`, shown once per session (`sessionStorage` in `try/catch`), and skipped automatically when `prefers-reduced-motion` is enabled.
-- **Interactive Project Simulators & Case Studies:** Live interactive previews for **Sentinel Chitral**, **GridPulse**, **UniSelection v2.0**, and **Edge-IIoTset & PP-PSFE: ML security study**, plus **TaskFlow** and **Full-Stack Web & CRM Suite**.
-- **Field Notes (Events & Gallery):** Data-driven **Top 5 Highlights** strip (`featured: true`) and filterable masonry photo archive with a keyboard- and swipe-accessible `<dialog>` lightbox.
-- **Adaptive Obsidian Dark / Archival Paper Light Theme:** Zero-FOUC CSS `light-dark()` tokens calibrated for WCAG AA contrast (`>= 4.5:1`), native CSS `animation-timeline: scroll()` progress indicator, and `⌘K` / `Ctrl+K` Command Palette.
+Every section and project case study is served at its own dedicated, server-rendered URL with a unique `<title>`, `<meta name="description">`, `<link rel="canonical">`, single `<h1>`, semantic breadcrumbs (`BreadcrumbList` JSON-LD), OpenGraph/Twitter shared image, and `ProfessionalService` + `Person` + `WebSite` structured data:
+
+- `/` : Home Overview
+- `/work` : Selected Work & Case Studies Index
+- `/work/sentinel-chitral` : Sentinel Chitral Case Study
+- `/work/gridpulse` : GridPulse Case Study
+- `/work/uniselection` : UniSelection v2.0 Case Study
+- `/work/edge-iiotset-pp-psfe` : Edge-IIoTset & PP-PSFE ML Security Case Study
+- `/work/taskflow` : TaskFlow Case Study
+- `/work/fullstack-crm-lab` : Full-Stack Web & CRM Suite Case Study
+- `/field-notes` : Field Notes & Event Gallery
+- `/stack` : Proof-Backed Technical Stack & Engineering Principles
+- `/journey` : Engineering Journey & Education
+- `/contact` : Direct Contact & Collaboration
+- `/sitemap.xml` & `/robots.txt` : Programmatic XML Sitemap and Crawler Directives
+
+---
+
+## Connecting a Custom Domain on Vercel
+
+All canonical URLs, OpenGraph links, `sitemap.xml`, `robots.txt`, and JSON-LD `@id` references are centrally generated from `src/lib/site.ts` via `NEXT_PUBLIC_SITE_URL`.
+
+1. Connect your domain in Vercel Dashboard (**Project Settings -> Domains**) or via CLI:
+   ```bash
+   vercel domains add hamdanali.dev
+   ```
+2. Set `NEXT_PUBLIC_SITE_URL` in your Vercel Environment Variables:
+   ```env
+   NEXT_PUBLIC_SITE_URL=https://hamdanali.dev
+   ```
+3. Trigger a redeploy so `sitemap.xml`, `robots.txt`, and all `<link rel="canonical">` tags resolve to your custom domain.
 
 ---
 
 ## Updating Your Portrait & Field Notes (Events & Gallery)
 
 ### 1. Replace Your Hero Portrait Photo
-Drop a high-resolution portrait JPEG (recommended square `1000×1000` or `4:5` portrait) at:
+Drop a high-resolution portrait JPEG at:
 ```text
 public/images/hamdan.jpg
 ```
-Because `HeroSection.tsx` statically imports `public/images/hamdan.jpg` via `next/image`, Next.js automatically generates responsive WebP/AVIF sizes and a blur-up placeholder on the next build.
+`HeroSection.tsx` statically imports `public/images/hamdan.jpg` via `next/image`, automatically generating responsive WebP/AVIF sizes and a blur-up placeholder on build.
 
 ### 2. Add or Edit Events in `Field Notes`
 All highlights and gallery photos come from **one typed file**:
 ```text
 content/events.ts
 ```
-1. Drop your event photos (`.jpg`, `.png`, or `.webp`) into:
-   ```text
-   public/events/
-   ```
-2. Open [`content/events.ts`](./content/events.ts), copy the ready-to-use template entry at the top of the file into `EVENTS`, and remove the `placeholder-*` entries:
-   ```ts
-   {
-     id: "devfest-islamabad-2026",
-     title: "GDG DevFest Islamabad",
-     date: "Nov 2026",
-     location: "Islamabad, Pakistan",
-     role: "Full-Stack Builder",
-     description: "Demoed Sentinel Chitral's 8-valley push alert workflow with fellow builders.",
-     tags: ["Community", "AI Products"],
-     featured: true, // true = shown in "Top 5 Highlights" strip (up to 5 items)
-     images: [
-       {
-         src: "/events/devfest-1.jpg",
-         alt: "Hamdan Ali presenting Sentinel Chitral on laptop at DevFest Islamabad",
-         width: 1200,
-         height: 800,
-       },
-     ],
-   }
-   ```
-3. **Auto-hide behavior:** If `EVENTS` is set to an empty array (`[]`), the `Field Notes` section and its navigation links hide automatically.
-
-### 3. Restoring the Standalone ML Research Section Later
-The standalone `ResearchSpotlight` section is preserved in [`src/components/sections/ResearchSpotlight.tsx`](./src/components/sections/ResearchSpotlight.tsx). To re-enable it alongside future papers, flip `ENABLE_RESEARCH_SPOTLIGHT` to `true` at the top of [`src/app/page.tsx`](./src/app/page.tsx).
+1. Drop your event photos (`.jpg`, `.png`, or `.webp`) into `public/events/`.
+2. Open [`content/events.ts`](./content/events.ts) and add or edit entries in `EVENTS`.
+3. If `EVENTS` is set to an empty array (`[]`), the `Field Notes` section hides automatically.
 
 ---
 

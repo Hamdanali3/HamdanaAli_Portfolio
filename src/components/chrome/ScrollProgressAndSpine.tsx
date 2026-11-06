@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export function ScrollProgressAndSpine({
   hasEventsSection = true,
+  showSpine = true,
   onSectionChange,
 }: {
   hasEventsSection?: boolean;
+  showSpine?: boolean;
   onSectionChange?: (id: string) => void;
 }) {
   const barRef = useRef<HTMLDivElement>(null);
@@ -59,7 +60,7 @@ export function ScrollProgressAndSpine({
 
   // Active section observer for spine + navbar
   useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
+    if (!showSpine || typeof IntersectionObserver === "undefined") return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -85,7 +86,7 @@ export function ScrollProgressAndSpine({
     });
 
     return () => observer.disconnect();
-  }, [onSectionChange, sections]);
+  }, [onSectionChange, sections, showSpine]);
 
   return (
     <>
@@ -99,49 +100,47 @@ export function ScrollProgressAndSpine({
         />
       </div>
 
-      {/* Desktop Right-Edge Section Spine */}
-      <aside
-        aria-label="Page section index"
-        className="fixed right-3 top-1/2 z-40 hidden -translate-y-1/2 xl:flex flex-col items-end gap-1"
-      >
-        {sections.map((sec) => {
-          const isActive = activeId === sec.id;
-          return (
-            <a
-              key={sec.id}
-              href={`#${sec.id}`}
-              aria-label={`${sec.index} ${sec.label}`}
-              className="group flex min-h-11 min-w-11 items-center justify-end gap-2 px-1 text-right focus:outline-none"
-            >
-              <span
-                className={cn(
-                  "pointer-events-none rounded-md border border-hairline bg-elevated px-2 py-0.5 font-mono text-[10px] tracking-[0.14em] uppercase backdrop-blur-md shadow-md transition-all duration-200 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0",
-                  isActive ? "text-signal font-semibold" : "text-ink-secondary"
-                )}
+      {/* Desktop Right-Edge Section Spine (shown on Home overview) */}
+      {showSpine && (
+        <aside
+          aria-label="Page section index"
+          className="fixed right-3 top-1/2 z-40 hidden -translate-y-1/2 xl:flex flex-col items-end gap-1"
+        >
+          {sections.map((sec) => {
+            const isActive = activeId === sec.id;
+            return (
+              <a
+                key={sec.id}
+                href={`#${sec.id}`}
+                aria-label={`${sec.index} ${sec.label}`}
+                className="group flex min-h-11 min-w-11 items-center justify-end gap-2 px-1 text-right focus:outline-none"
               >
-                {sec.index} · {sec.label}
-              </span>
-              <span className="relative flex h-4 w-4 items-center justify-center">
                 <span
                   className={cn(
-                    "h-[1.5px] transition-all duration-200",
-                    isActive
-                      ? "w-4 bg-signal"
-                      : "w-2 bg-ink-muted/55 group-hover:w-3.5 group-hover:bg-ink"
+                    "pointer-events-none rounded-md border border-hairline bg-elevated px-2 py-0.5 font-mono text-[10px] tracking-[0.14em] uppercase backdrop-blur-md shadow-md transition-all duration-200 opacity-0 translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0",
+                    isActive ? "text-signal font-semibold" : "text-ink-secondary"
                   )}
-                />
-                {isActive && (
-                  <motion.span
-                    layoutId="spine-active-dot"
-                    className="absolute -right-1 h-1.5 w-1.5 rounded-full bg-signal"
-                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {sec.index} · {sec.label}
+                </span>
+                <span className="relative flex h-4 w-4 items-center justify-center">
+                  <span
+                    className={cn(
+                      "h-[1.5px] transition-all duration-200",
+                      isActive
+                        ? "w-4 bg-signal"
+                        : "w-2 bg-ink-muted/55 group-hover:w-3.5 group-hover:bg-ink"
+                    )}
                   />
-                )}
-              </span>
-            </a>
-          );
-        })}
-      </aside>
+                  {isActive && (
+                    <span className="absolute -right-1 h-1.5 w-1.5 rounded-full bg-signal" />
+                  )}
+                </span>
+              </a>
+            );
+          })}
+        </aside>
+      )}
     </>
   );
 }

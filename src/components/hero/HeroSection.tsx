@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "motion/react";
+import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
-  ArrowDownRight,
+  ArrowUpRight,
   Camera,
   Check,
   Code2,
@@ -15,12 +16,19 @@ import {
 } from "lucide-react";
 import hamdanPortrait from "../../../public/images/hamdan.jpg";
 import { GitHubMark } from "@/components/ui/GitHubMark";
-import { TopographicCanvas } from "@/components/hero/TopographicCanvas";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { HERO_TELEMETRY, PROFILE } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
+
+const TopographicCanvas = dynamic(
+  () =>
+    import("@/components/hero/TopographicCanvas").then(
+      (mod) => mod.TopographicCanvas
+    ),
+  { ssr: false }
+);
 
 interface MultilingualIdentity {
   id: string;
@@ -117,7 +125,7 @@ const MULTILINGUAL_IDENTITIES: readonly MultilingualIdentity[] = [
 ];
 
 interface HeroSectionProps {
-  onOpenCommandPalette: () => void;
+  onOpenCommandPalette?: () => void;
   hasEventsSection?: boolean;
 }
 
@@ -129,7 +137,7 @@ export function HeroSection({
   const [langIndex, setLangIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Continuous animation loop cycling all the time through different languages
+  // Continuous animation loop cycling through languages
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
@@ -138,7 +146,8 @@ export function HeroSection({
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  const activeIdentity = MULTILINGUAL_IDENTITIES[langIndex] ?? MULTILINGUAL_IDENTITIES[0];
+  const activeIdentity =
+    MULTILINGUAL_IDENTITIES[langIndex] ?? MULTILINGUAL_IDENTITIES[0];
 
   const handleNextLanguage = () => {
     setLangIndex((prev) => (prev + 1) % MULTILINGUAL_IDENTITIES.length);
@@ -150,6 +159,14 @@ export function HeroSection({
     setTimeout(() => setCopied(false), 2200);
   };
 
+  const triggerCommandPalette = () => {
+    if (onOpenCommandPalette) {
+      onOpenCommandPalette();
+      return;
+    }
+    window.dispatchEvent(new CustomEvent("portfolio:open-command"));
+  };
+
   return (
     <section
       id="overview"
@@ -159,28 +176,22 @@ export function HeroSection({
       <TopographicCanvas />
 
       <div className="relative z-10 mx-auto max-w-[1340px] px-4 sm:px-8">
-        {/* Top Metadata Strip */}
+        {/* Clean Top Status Strip (Coordinate clutter removed) */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline pb-4 mb-8 sm:mb-12 font-mono text-[11px] tracking-[0.13em] uppercase text-ink-muted">
           <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
-            <span>CHAPTER 01 · SYSTEM OVERVIEW &amp; PHILOSOPHY</span>
+            <span>CHAPTER 01 · OVERVIEW &amp; PRODUCT ENGINEERING</span>
           </div>
-          <div className="hidden md:flex items-center gap-3 font-mono text-[11px] text-ink-muted">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-surface-2/60 px-2.5 py-1 text-ink-secondary">
-              <span className="text-signal">📍</span> {PROFILE.primaryCoordinates}
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-surface-2/60 px-2.5 py-1 text-ink-secondary">
-              <span>🏔️</span> {PROFILE.secondaryCoordinates}
-            </span>
+          <div className="text-telemetry font-medium">
+            AVAILABLE FOR FULL-STACK &amp; AI PRODUCT ROLES
           </div>
-          <div className="text-telemetry font-medium">AVAILABLE FOR FULL-STACK ROLES</div>
         </div>
 
         {/* Main 12-Column Swiss Editorial Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-10 items-center">
-          {/* Left 7 Columns: Zero-CLS Greeting Stage + Hero Headline */}
+          {/* Left 7 Columns: Continuous Multilingual Greeting + Hero Headline */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Living Multilingual Identity Banner — In Animation Mode All The Time */}
+            {/* Living Multilingual Identity Banner */}
             <div className="space-y-3.5">
               <div
                 onMouseEnter={() => setIsPaused(true)}
@@ -200,13 +211,14 @@ export function HeroSection({
                     <span className="font-semibold">LIVING MULTILINGUAL IDENTITY</span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-ink-muted">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-2.5 py-0.5 text-ink font-medium">
+                  <div className="flex shrink-0 items-center gap-2 whitespace-nowrap text-ink-muted">
+                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-2.5 py-0.5 text-ink font-medium">
                       <span>{activeIdentity.flag}</span>
                       <span>{activeIdentity.languageName}</span>
                     </span>
-                    <span className="tabular-nums font-semibold text-ink-secondary">
-                      {String(langIndex + 1).padStart(2, "0")} / {String(MULTILINGUAL_IDENTITIES.length).padStart(2, "0")}
+                    <span className="shrink-0 whitespace-nowrap tabular-nums font-semibold text-ink-secondary">
+                      {String(langIndex + 1).padStart(2, "0")} /{" "}
+                      {String(MULTILINGUAL_IDENTITIES.length).padStart(2, "0")}
                     </span>
                   </div>
                 </div>
@@ -215,37 +227,35 @@ export function HeroSection({
                 <div
                   className={cn(
                     "flex min-h-[60px] sm:min-h-[68px] items-center pt-2.5",
-                    activeIdentity.dir === "rtl" ? "justify-end text-right" : "justify-start text-left"
+                    activeIdentity.dir === "rtl"
+                      ? "justify-end text-right"
+                      : "justify-start text-left"
                   )}
                 >
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeIdentity.id}
-                      initial={{ opacity: 0, y: 8, filter: "blur(3px)" }}
-                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, y: -8, filter: "blur(3px)" }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      lang={activeIdentity.lang}
-                      dir={activeIdentity.dir}
-                      className={cn(
-                        "inline-block w-fit",
-                        activeIdentity.lang === "ur"
-                          ? "urdu-nastaliq text-3xl sm:text-4xl font-bold leading-[2.1] text-ink"
-                          : "font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] leading-tight text-ink"
-                      )}
-                    >
-                      <span className="name-kinetic-continuous">
-                        {activeIdentity.text}
-                      </span>
-                    </motion.div>
-                  </AnimatePresence>
+                  <div
+                    key={activeIdentity.id}
+                    lang={activeIdentity.lang}
+                    dir={activeIdentity.dir}
+                    className={cn(
+                      "inline-block w-fit animate-identity-enter",
+                      activeIdentity.lang === "ur"
+                        ? "urdu-nastaliq text-3xl sm:text-4xl font-bold leading-[2.1] text-ink"
+                        : "font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] leading-tight text-ink"
+                    )}
+                  >
+                    <span className="name-kinetic-continuous">
+                      {activeIdentity.text}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Bottom Micro-Bar: Role Tag + Clickable Hint */}
                 <div className="flex items-center justify-between pt-2.5 border-t border-hairline/50 text-[10px] font-mono text-ink-muted">
                   <div className="flex items-center gap-2 text-ink-secondary">
                     <Sparkles className="h-3 w-3 text-signal" />
-                    <span>{activeIdentity.phonetic ?? "Continuous Living Name Animation"}</span>
+                    <span>
+                      {activeIdentity.phonetic ?? "Continuous Living Name Animation"}
+                    </span>
                   </div>
                   <span className="inline-flex items-center gap-1 text-ink-muted group-hover:text-signal transition-colors">
                     <span>Click or tap to advance</span>
@@ -268,12 +278,14 @@ export function HeroSection({
                   className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-surface-1/80 px-3.5 py-1.5 font-mono text-[10px] text-ink-secondary hover:border-signal hover:text-signal transition-colors cursor-pointer"
                 >
                   <Languages className="h-3.5 w-3.5 text-signal" />
-                  <span>Next Language ({langIndex + 1}/10) ↻</span>
+                  <span>
+                    Next Language ({langIndex + 1}/{MULTILINGUAL_IDENTITIES.length}) ↻
+                  </span>
                 </button>
               </div>
             </div>
 
-            {/* Monumental Hero Headline (Painted Immediately on Frame 0 for Instant LCP) */}
+            {/* Single Clear H1 for Home Page */}
             <h1
               id="hero-heading"
               className="text-[clamp(2.45rem,5.4vw,5.15rem)] font-extrabold tracking-[-0.04em] leading-[1.01] text-ink"
@@ -285,41 +297,45 @@ export function HeroSection({
               products with{" "}
               <span className="font-serif italic font-normal text-champagne tracking-[-0.01em]">
                 AI
-              </span>{" "}
-              — built for real users.
+              </span>
+              , built for real users.
             </h1>
 
             <p className="max-w-[60ch] text-base sm:text-lg leading-[1.68] text-ink-secondary">
-              I&apos;m <strong className="font-semibold text-ink"><span className="name-kinetic-continuous">Hamdan Ali</span></strong>, a BS
-              Software Engineering student at Air University Islamabad and HindukushSoft alumnus.
-              I build <strong className="font-semibold text-ink">AI-powered</strong> web apps,
-              Flutter mobile tools, and clean REST APIs — from mountain hazard alerts in Chitral
-              to student admissions software.
+              I&apos;m{" "}
+              <strong className="font-semibold text-ink">
+                <span className="name-kinetic-continuous">Hamdan Ali</span>
+              </strong>
+              , a BS Software Engineering student at Air University Islamabad and
+              HindukushSoft alumnus. I build{" "}
+              <strong className="font-semibold text-ink">AI-powered</strong> web
+              apps, Flutter mobile tools, and clean REST APIs, from mountain hazard
+              alerts in Chitral to student admissions software.
             </p>
 
-            {/* Primary Action Row (All >= 44px tap targets) */}
+            {/* Primary Action Row (Internal Links + Copy Email) */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <Magnetic strength={0.2}>
-                <a
-                  href="#work"
+                <Link
+                  href="/work"
                   data-cursor-label="EXPLORE"
                   className="inline-flex min-h-11 items-center gap-2.5 rounded-full bg-signal-fill px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_26px_-10px_rgba(194,46,6,0.75)] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.99]"
                 >
                   <span>Explore Selected Work</span>
-                  <ArrowDownRight className="h-4 w-4" />
-                </a>
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
               </Magnetic>
 
               {hasEventsSection && (
                 <Magnetic strength={0.16}>
-                  <a
-                    href="#field-notes"
+                  <Link
+                    href="/field-notes"
                     data-cursor-label="GALLERY"
                     className="inline-flex min-h-11 items-center gap-2 rounded-full border border-strong bg-surface-1/90 px-5 py-3 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-surface-2"
                   >
                     <Camera className="h-4 w-4 text-signal" />
                     <span>Field Notes &amp; Gallery</span>
-                  </a>
+                  </Link>
                 </Magnetic>
               )}
 
@@ -349,7 +365,7 @@ export function HeroSection({
           {/* Right 5 Columns: Large Editorial Portrait + Clean Profile Card */}
           <div className="lg:col-span-5">
             <SpotlightCard enableTilt showFiducials className="p-4 sm:p-5 backdrop-blur-md">
-              {/* Clean, unobstructed Hero Photo frame — zero text covering face, hands or clothing */}
+              {/* Unobstructed Hero Photo frame */}
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-hairline bg-surface-2 shadow-inner">
                 <Image
                   src={hamdanPortrait}
@@ -359,7 +375,6 @@ export function HeroSection({
                   sizes="(max-width: 640px) 92vw, (max-width: 1024px) 520px, 460px"
                   className="h-full w-full object-cover object-[center_20%] transition-transform duration-500 hover:scale-[1.02]"
                 />
-                {/* Clean status chip in top corner */}
                 <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1 font-mono text-[10px] font-semibold text-white backdrop-blur-md shadow-md">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span>ACTIVE BUILDER</span>
@@ -424,12 +439,12 @@ export function HeroSection({
 
               <button
                 type="button"
-                onClick={onOpenCommandPalette}
+                onClick={triggerCommandPalette}
                 className="mt-4 flex min-h-11 w-full items-center justify-between rounded-xl border border-hairline bg-canvas/85 px-3.5 py-2.5 font-mono text-[11px] text-ink-secondary transition-colors duration-200 hover:border-strong hover:text-ink cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <Terminal className="h-3.5 w-3.5 text-signal" />
-                  <span>Quick-Jump Any Project</span>
+                  <span>Quick-Jump Any Page or Project</span>
                 </span>
                 <span
                   aria-hidden="true"
@@ -445,7 +460,10 @@ export function HeroSection({
         {/* Bottom 4-Column Shipped Product & Quality Strip */}
         <div className="mt-12 sm:mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-hairline rounded-2xl bg-surface-1/85 backdrop-blur-md divide-y sm:divide-y-0 sm:divide-x divide-hairline overflow-hidden">
           {HERO_TELEMETRY.map((stat) => (
-            <div key={stat.label} className="p-6 transition-colors duration-200 hover:bg-surface-2/50">
+            <div
+              key={stat.label}
+              className="p-6 transition-colors duration-200 hover:bg-surface-2/50"
+            >
               <div className="font-mono text-3xl sm:text-4xl font-bold tracking-tight text-ink tabular-nums">
                 <AnimatedCounter
                   value={stat.numericValue}

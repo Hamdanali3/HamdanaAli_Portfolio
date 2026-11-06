@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowUpRight,
   Camera,
@@ -24,7 +25,7 @@ interface CommandPaletteProps {
   open: boolean;
   hasEventsSection?: boolean;
   onClose: () => void;
-  onSelectProject: (project: PortfolioProject) => void;
+  onSelectProject?: (project: PortfolioProject) => void;
   onSelectTheme: (choice: ThemeChoice) => void;
 }
 
@@ -41,8 +42,8 @@ type IconKey =
   | "monitor";
 
 type ActionKind =
+  | { type: "route"; href: string }
   | { type: "project"; project: PortfolioProject }
-  | { type: "section"; sectionId: string }
   | { type: "url"; url: string }
   | { type: "copy-email" }
   | { type: "theme"; choice: ThemeChoice };
@@ -85,9 +86,9 @@ export function CommandPalette({
   open,
   hasEventsSection = true,
   onClose,
-  onSelectProject,
   onSelectTheme,
 }: CommandPaletteProps) {
+  const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
@@ -116,60 +117,68 @@ export function CommandPalette({
   }, [requestClose]);
 
   const actions = useMemo<CommandAction[]>(() => {
-    const sectionJumps: CommandAction[] = [
+    const pageJumps: CommandAction[] = [
       {
-        id: "sec-work",
-        group: "Sections",
-        title: "02 · Selected Work",
-        subtitle: "Shipped web, mobile & AI case studies",
+        id: "page-home",
+        group: "Pages",
+        title: "01 · Home Overview",
+        subtitle: "Main portfolio overview & live metrics",
         iconKey: "compass",
-        kind: { type: "section", sectionId: "work" },
+        kind: { type: "route", href: "/" },
+      },
+      {
+        id: "page-work",
+        group: "Pages",
+        title: "02 · Selected Work & Case Studies",
+        subtitle: "Dedicated projects index (/work)",
+        iconKey: "compass",
+        kind: { type: "route", href: "/work" },
       },
       ...(hasEventsSection
         ? [
             {
-              id: "sec-field-notes",
-              group: "Sections",
+              id: "page-field-notes",
+              group: "Pages",
               title: "03 · Field Notes & Gallery",
-              subtitle: "Top 5 featured event highlights & photo lightbox",
+              subtitle: "Top 5 featured event highlights & photo lightbox (/field-notes)",
               iconKey: "camera" as const,
-              kind: { type: "section" as const, sectionId: "field-notes" },
+              kind: { type: "route" as const, href: "/field-notes" },
             },
           ]
         : []),
       {
-        id: "sec-stack",
-        group: "Sections",
+        id: "page-stack",
+        group: "Pages",
         title: `${hasEventsSection ? "04" : "03"} · Capabilities & Stack`,
-        subtitle: "Next.js, Laravel 12, Flutter, Python & AI guardrails",
+        subtitle: "Next.js, Laravel 12, Flutter, Python & AI guardrails (/stack)",
         iconKey: "compass",
-        kind: { type: "section", sectionId: "architecture" },
+        kind: { type: "route", href: "/stack" },
       },
       {
-        id: "sec-journey",
-        group: "Sections",
-        title: `${hasEventsSection ? "05" : "04"} · Journey`,
-        subtitle: "HindukushSoft internship, shipped apps & Air University",
+        id: "page-journey",
+        group: "Pages",
+        title: `${hasEventsSection ? "05" : "04"} · Engineering Journey`,
+        subtitle: "HindukushSoft internship, shipped apps & Air University (/journey)",
         iconKey: "compass",
-        kind: { type: "section", sectionId: "journey" },
+        kind: { type: "route", href: "/journey" },
       },
       {
-        id: "sec-contact",
-        group: "Sections",
-        title: `${hasEventsSection ? "06" : "05"} · Contact`,
-        subtitle: "Send a direct message or copy email",
+        id: "page-contact",
+        group: "Pages",
+        title: `${hasEventsSection ? "06" : "05"} · Contact & Dispatch`,
+        subtitle: "Send a direct message or copy email (/contact)",
         iconKey: "compass",
-        kind: { type: "section", sectionId: "contact" },
+        kind: { type: "route", href: "/contact" },
       },
     ];
 
     const projectActions: CommandAction[] = PROJECTS.map((p) => ({
       id: `case-${p.id}`,
-      group: "Project Case Studies",
+      group: "Project Case Study Pages",
       title: `${p.index}. ${p.title}`,
-      subtitle: p.subtitle,
+      subtitle: `${p.subtitle} (/work/${p.id})`,
       iconKey: "layers",
-      kind: { type: "project", project: p },
+      kind: { type: "route", href: `/work/${p.id}` },
     }));
 
     const liveDeployments: CommandAction[] = PROJECTS.filter((p) => p.liveUrl).map((p) => ({
@@ -224,7 +233,7 @@ export function CommandPalette({
       },
     ];
 
-    return [...sectionJumps, ...liveDeployments, ...projectActions, ...quickActions];
+    return [...pageJumps, ...projectActions, ...liveDeployments, ...quickActions];
   }, [copiedEmail, hasEventsSection]);
 
   const filtered = useMemo(() => {
@@ -246,12 +255,10 @@ export function CommandPalette({
         setTimeout(() => setCopiedEmail(false), 2000);
         return;
       }
-      if (kind.type === "section") {
-        const targetId = kind.sectionId;
+      if (kind.type === "route") {
+        const href = kind.href;
         requestClose();
-        setTimeout(() => {
-          document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
-        }, 120);
+        router.push(href);
         return;
       }
       if (kind.type === "url") {
@@ -265,12 +272,12 @@ export function CommandPalette({
         return;
       }
       if (kind.type === "project") {
-        const proj = kind.project;
+        const href = `/work/${kind.project.id}`;
         requestClose();
-        setTimeout(() => onSelectProject(proj), 140);
+        router.push(href);
       }
     },
-    [onSelectProject, onSelectTheme, requestClose]
+    [onSelectTheme, requestClose, router]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -312,7 +319,7 @@ export function CommandPalette({
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Jump to project, Field Notes gallery, live app, or switch theme..."
+            placeholder="Jump to page, case study URL, live app, or switch theme..."
             className="w-full bg-transparent text-sm text-ink placeholder:text-ink-muted focus:outline-none"
           />
           <button
@@ -329,7 +336,7 @@ export function CommandPalette({
         <div className="overflow-y-auto p-2 space-y-1">
           {filtered.length === 0 ? (
             <p className="py-10 text-center font-mono text-xs text-ink-muted">
-              No matching commands or projects for &ldquo;{query}&rdquo;.
+              No matching commands or pages for &ldquo;{query}&rdquo;.
             </p>
           ) : (
             filtered.map((item, idx) => {
@@ -391,7 +398,7 @@ export function CommandPalette({
             <span>↵ Select</span>
             <span>ESC Close</span>
           </div>
-          <span>HAMDAN ALI {"//"} FULL-STACK · AI</span>
+          <span>HAMDAN ALI · FULL-STACK &amp; AI</span>
         </div>
       </div>
     </dialog>

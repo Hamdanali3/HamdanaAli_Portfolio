@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Hamdan Ali — Full-Stack Developer · AI-Powered Products";
+export const alt = "Hamdan Ali: Full-Stack Developer · AI-Powered Products";
 export const size = {
   width: 1200,
   height: 630,
@@ -58,7 +58,7 @@ export default function OpenGraphImage() {
                 color: "#c0c6d4",
               }}
             >
-              HAMDAN ALI // PORTFOLIO
+              HAMDAN ALI · PORTFOLIO
             </span>
           </div>
           <span

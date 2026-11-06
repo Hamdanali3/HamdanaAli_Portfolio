@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "motion/react";
 import { ArrowUpRight, BookOpenCheck, CheckCircle, Cpu, FileSpreadsheet } from "lucide-react";
 import { IEEE_RESEARCH } from "@/data/portfolio";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
@@ -83,7 +82,7 @@ export function ResearchSpotlight() {
                 &ldquo;{IEEE_RESEARCH.title}&rdquo;
               </h3>
               <p className="font-mono text-[11px] text-ink-muted">
-                {IEEE_RESEARCH.author} — {IEEE_RESEARCH.affiliation}
+                {IEEE_RESEARCH.author} · {IEEE_RESEARCH.affiliation}
               </p>
               <p className="text-sm leading-[1.7] text-ink-secondary">
                 {IEEE_RESEARCH.abstractSummary}
@@ -133,16 +132,11 @@ export function ResearchSpotlight() {
                         onClick={() => setMetric(tab.key)}
                         className={cn(
                           "relative rounded-lg px-3 py-1.5 font-mono text-[11px] transition-colors cursor-pointer",
-                          active ? "text-white font-semibold" : "text-ink-secondary hover:text-ink"
+                          active
+                            ? "bg-signal text-white font-semibold"
+                            : "text-ink-secondary hover:text-ink"
                         )}
                       >
-                        {active && (
-                          <motion.span
-                            layoutId="research-metric-pill"
-                            className="absolute inset-0 rounded-lg bg-signal"
-                            transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                          />
-                        )}
                         <span className="relative z-10">{tab.label}</span>
                       </button>
                     );
@@ -202,12 +196,10 @@ export function ResearchSpotlight() {
                         </div>
 
                         <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2">
-                          <motion.div
-                            initial={false}
-                            animate={{ width: `${Math.min(100, Math.max(4, pct))}%` }}
-                            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                          <div
+                            style={{ width: `${Math.min(100, Math.max(4, pct))}%` }}
                             className={cn(
-                              "h-full rounded-full",
+                              "h-full rounded-full transition-[width] duration-300 ease-out",
                               row.isSelected ? "bg-signal" : "bg-ink-muted/65"
                             )}
                           />

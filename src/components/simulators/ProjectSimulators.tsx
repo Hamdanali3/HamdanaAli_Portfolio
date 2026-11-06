@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { motion } from "motion/react";
 import {
   Activity,
   AlertTriangle,
@@ -18,7 +17,7 @@ import { cn } from "@/lib/utils";
 import type { SimulatorKind } from "@/data/portfolio";
 
 /* ============================================================================
- * 1. SENTINEL CHITRAL — 8-VALLEY GLOF RISK & FCM MULTICAST SIMULATOR
+ * 1. SENTINEL CHITRAL - 8-VALLEY GLOF RISK & FCM MULTICAST SIMULATOR
  * ============================================================================ */
 const CHITRAL_VALLEYS = [
   { name: "Reshun", risk: "Watch", confidence: 0.84, note: "Glacial meltwater index elevated (+14%)." },
@@ -56,7 +55,7 @@ function SentinelSimulator() {
         <div className="flex items-center gap-2">
           <Radio className="h-4 w-4 text-signal" />
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink">
-            SENTINEL // 8-VALLEY GLOF TELEMETRY
+            SENTINEL · 8-VALLEY GLOF TELEMETRY
           </span>
         </div>
         <span className="rounded-full border border-hairline bg-surface-2 px-2.5 py-0.5 font-mono text-[10px] text-ink-secondary">
@@ -130,11 +129,9 @@ function SentinelSimulator() {
             </span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
-            <motion.div
-              className="h-full bg-signal"
-              initial={false}
-              animate={{ width: `${active.confidence * 100}%` }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            <div
+              className="h-full bg-signal transition-[width] duration-300 ease-out"
+              style={{ width: `${active.confidence * 100}%` }}
             />
           </div>
         </div>
@@ -162,7 +159,7 @@ function SentinelSimulator() {
 }
 
 /* ============================================================================
- * 2. GRIDPULSE — 177+ MW FLEET TELEMETRY & ALERT -> WORK ORDER STATE MACHINE
+ * 2. GRIDPULSE - 177+ MW FLEET TELEMETRY & ALERT -> WORK ORDER STATE MACHINE
  * ============================================================================ */
 type AlertStage = "open" | "acknowledged" | "work_order" | "resolved";
 
@@ -202,7 +199,7 @@ function GridPulseSimulator() {
         <div className="flex items-center gap-2">
           <Zap className="h-4 w-4 text-telemetry" />
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink">
-            GRIDPULSE // CHITRAL FLEET CONTROL
+            GRIDPULSE · CHITRAL FLEET CONTROL
           </span>
         </div>
         <span className="flex items-center gap-1.5 font-mono text-[10px] text-telemetry">
@@ -286,7 +283,7 @@ function GridPulseSimulator() {
 }
 
 /* ============================================================================
- * 3. EDGE-IIOTSET PP-PSFE — LEAKAGE AUDIT & 15-CLASS BENCHMARK SIMULATOR
+ * 3. EDGE-IIOTSET PP-PSFE - LEAKAGE AUDIT & 15-CLASS BENCHMARK SIMULATOR
  * ============================================================================ */
 function EdgeIIoTSimulator() {
   const [mode, setMode] = useState<"sanitized" | "leaky">("sanitized");
@@ -313,7 +310,7 @@ function EdgeIIoTSimulator() {
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-4 w-4 text-champagne" />
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink">
-            PP-PSFE // 15-CLASS BENCHMARK
+            PP-PSFE · 15-CLASS BENCHMARK
           </span>
         </div>
 
@@ -362,12 +359,10 @@ function EdgeIIoTSimulator() {
               </span>
             </div>
             <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2">
-              <motion.div
-                initial={false}
-                animate={{ width: `${b.val}%` }}
-                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              <div
+                style={{ width: `${b.val}%` }}
                 className={cn(
-                  "h-full rounded-full",
+                  "h-full rounded-full transition-[width] duration-300 ease-out",
                   b.highlight
                     ? "bg-signal"
                     : mode === "leaky"
@@ -392,7 +387,7 @@ function EdgeIIoTSimulator() {
 }
 
 /* ============================================================================
- * 4. UNISELECTION v2.0 — ELIGIBILITY & DETERMINISTIC SYNC SIMULATOR
+ * 4. UNISELECTION v2.0 - ELIGIBILITY & DETERMINISTIC SYNC SIMULATOR
  * ============================================================================ */
 const MERIT_PROFILES = [
   { label: "92% Aggregate", matchedUnis: 248, scholarships: 11, topTrack: "CS & Software Eng (NUST, Air, FAST, Global)" },
@@ -413,7 +408,7 @@ function UniSelectionSimulator() {
         <div className="flex items-center gap-2">
           <GraduationCap className="h-4 w-4 text-signal" />
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink">
-            UNISELECTION v2.0 // ELIGIBILITY ENGINE
+            UNISELECTION v2.0 · ELIGIBILITY ENGINE
           </span>
         </div>
         <span className="font-mono text-[10px] text-telemetry">SHA-256 VERIFIED</span>

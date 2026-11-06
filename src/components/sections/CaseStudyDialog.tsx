@@ -75,7 +75,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
           <div className="flex items-center justify-between gap-4 border-b border-hairline bg-surface-1/95 px-6 py-3.5 backdrop-blur-md">
             <div className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted min-w-0">
               <span className="text-signal font-semibold shrink-0">
-                CASE {"//"} {project.index}
+                CASE · {project.index}
               </span>
               <span aria-hidden="true">·</span>
               <span className="truncate">{project.category}</span>
@@ -166,7 +166,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="rounded-2xl border border-hairline bg-canvas/70 p-6 space-y-2.5">
                 <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-signal">
-                  01 {"//"} THE PROBLEM
+                  01 · THE PROBLEM
                 </div>
                 <p className="text-sm leading-[1.7] text-ink-secondary">
                   {project.problemStatement}
@@ -174,7 +174,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
               </div>
               <div className="rounded-2xl border border-hairline bg-canvas/70 p-6 space-y-2.5">
                 <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-telemetry">
-                  02 {"//"} IMPLEMENTATION ARCHITECTURE
+                  02 · IMPLEMENTATION ARCHITECTURE
                 </div>
                 <p className="text-sm leading-[1.7] text-ink-secondary">
                   {project.architectureSummary}
@@ -216,7 +216,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={project.screenshots[activeShotIdx].url}
-                      alt={`${project.title} — ${project.screenshots[activeShotIdx].label}`}
+                      alt={`${project.title}: ${project.screenshots[activeShotIdx].label}`}
                       loading="lazy"
                       className="h-full w-full object-contain"
                     />

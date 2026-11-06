@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useInView, useReducedMotion } from "motion/react";
 
 interface AnimatedCounterProps {
   value: number;
@@ -32,43 +31,67 @@ export function AnimatedCounter({
   className,
 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-16px" });
-  const prefersReduced = useReducedMotion();
   // Always render the real target value on SSR / no-JS / pre-animation so "00" or "0.00%" never flashes
   const [displayValue, setDisplayValue] = useState<number>(value);
 
   useEffect(() => {
-    if (!isInView || prefersReduced) return;
+    const el = ref.current;
+    if (!el || typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const startVal = computeNearStart(value, decimals);
     if (startVal === value) return;
 
     let rafId = 0;
-    const clampedDuration = Math.min(durationMs, 380);
-    const startTime = performance.now();
+    let hasAnimated = false;
 
-    const step = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / clampedDuration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = startVal + (value - startVal) * eased;
-      setDisplayValue(progress < 1 ? current : value);
+    const runAnimation = () => {
+      if (hasAnimated) return;
+      hasAnimated = true;
+      const clampedDuration = Math.min(durationMs, 380);
+      const startTime = performance.now();
 
-      if (progress < 1) {
-        rafId = requestAnimationFrame(step);
-      }
+      const step = (now: number) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / clampedDuration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = startVal + (value - startVal) * eased;
+        setDisplayValue(progress < 1 ? current : value);
+
+        if (progress < 1) {
+          rafId = requestAnimationFrame(step);
+        }
+      };
+
+      rafId = requestAnimationFrame(step);
     };
 
-    rafId = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(rafId);
-  }, [isInView, value, decimals, durationMs, prefersReduced]);
+    if (typeof IntersectionObserver === "undefined") {
+      runAnimation();
+      return () => cancelAnimationFrame(rafId);
+    }
 
-  const shown = prefersReduced ? value : displayValue;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          runAnimation();
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "-16px" }
+    );
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(rafId);
+    };
+  }, [value, decimals, durationMs]);
 
   return (
     <span ref={ref} className={className}>
       {prefix}
-      {shown.toFixed(decimals)}
+      {displayValue.toFixed(decimals)}
       {suffix}
     </span>
   );

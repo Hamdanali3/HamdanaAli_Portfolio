@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { motion } from "motion/react";
+import Link from "next/link";
 import { Command, Monitor, Moon, Sun, SlidersHorizontal } from "lucide-react";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { cn } from "@/lib/utils";
@@ -9,8 +9,18 @@ import { PROFILE } from "@/data/portfolio";
 
 export type ThemeChoice = "system" | "dark" | "light";
 
+export type ActiveRouteId =
+  | "/"
+  | "/work"
+  | "/field-notes"
+  | "/stack"
+  | "/journey"
+  | "/contact"
+  | "/404";
+
 interface NavbarDockProps {
   activeSection: string;
+  activeRoute?: ActiveRouteId;
   hasEventsSection?: boolean;
   onOpenCommandPalette: () => void;
   themeChoice: ThemeChoice;
@@ -33,6 +43,7 @@ function getDarkSchemeServerSnapshot() {
 
 export function NavbarDock({
   activeSection,
+  activeRoute = "/",
   hasEventsSection = true,
   onOpenCommandPalette,
   themeChoice,
@@ -48,16 +59,26 @@ export function NavbarDock({
   );
 
   const navItems = useMemo(() => {
-    const items: { id: string; label: string; count?: string }[] = [
-      { id: "work", label: "Work", count: "06" },
+    const items: {
+      id: string;
+      href: ActiveRouteId;
+      label: string;
+      count?: string;
+    }[] = [
+      { id: "overview", href: "/", label: "Overview" },
+      { id: "work", href: "/work", label: "Work", count: "06" },
     ];
     if (hasEventsSection) {
-      items.push({ id: "field-notes", label: "Field Notes" });
+      items.push({
+        id: "field-notes",
+        href: "/field-notes",
+        label: "Field Notes",
+      });
     }
     items.push(
-      { id: "architecture", label: "Stack" },
-      { id: "journey", label: "Journey" },
-      { id: "contact", label: "Contact" }
+      { id: "architecture", href: "/stack", label: "Stack" },
+      { id: "journey", href: "/journey", label: "Journey" },
+      { id: "contact", href: "/contact", label: "Contact" }
     );
     return items;
   }, [hasEventsSection]);
@@ -104,8 +125,8 @@ export function NavbarDock({
         {/* Brand Identity + Live Timezone Status */}
         <div className="flex items-center gap-3">
           <Magnetic strength={0.18}>
-            <a
-              href="#overview"
+            <Link
+              href="/"
               className="group flex min-h-11 items-center gap-2.5 focus:outline-none"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-hairline bg-surface-2 font-mono text-xs font-bold tracking-tight text-ink transition-colors duration-200 group-hover:border-signal-fill group-hover:bg-signal-fill group-hover:text-white">
@@ -119,7 +140,7 @@ export function NavbarDock({
                   FULL-STACK · AI
                 </span>
               </div>
-            </a>
+            </Link>
           </Magnetic>
 
           <div className="hidden xl:flex items-center gap-2 rounded-full border border-hairline bg-surface-1/80 px-3 py-1.5 ml-2">
@@ -133,26 +154,25 @@ export function NavbarDock({
           </div>
         </div>
 
-        {/* Center Navigation Links */}
+        {/* Center Multi-Page Navigation Links */}
         <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
-            const isActive = activeSection === item.id;
+            const isActive =
+              activeRoute === "/"
+                ? activeSection === item.id
+                : activeRoute === item.href;
             return (
-              <a
+              <Link
                 key={item.id}
-                href={`#${item.id}`}
+                href={item.href}
+                aria-current={activeRoute === item.href ? "page" : undefined}
                 className={cn(
                   "relative inline-flex min-h-11 items-center rounded-full px-3.5 py-2 text-xs font-medium tracking-[-0.01em] transition-colors duration-200",
-                  isActive ? "text-ink" : "text-ink-secondary hover:text-ink"
+                  isActive
+                    ? "border border-hairline bg-surface-2 text-ink"
+                    : "border border-transparent text-ink-secondary hover:text-ink"
                 )}
               >
-                {isActive && (
-                  <motion.span
-                    layoutId="navbar-active-pill"
-                    className="absolute inset-0 rounded-full border border-hairline bg-surface-2"
-                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                )}
                 <span className="relative z-10 flex items-center gap-1.5">
                   {item.label}
                   {item.count && (
@@ -161,7 +181,7 @@ export function NavbarDock({
                     </span>
                   )}
                 </span>
-              </a>
+              </Link>
             );
           })}
         </nav>
