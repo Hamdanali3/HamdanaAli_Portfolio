@@ -111,7 +111,7 @@ export function HeroSection({
   useEffect(() => {
     if (!greetingActive) return;
 
-    // Total sequence ~2.95s across 3 steps, each transition <= 300ms
+    // Total sequence ~2.95s across 3 steps, each transition <= 280ms
     const t1 = setTimeout(() => setStepIdx(1), 980);
     const t2 = setTimeout(() => setStepIdx(2), 1980);
     const t3 = setTimeout(() => {
@@ -151,7 +151,7 @@ export function HeroSection({
 
       <div className="relative z-10 mx-auto max-w-[1340px] px-4 sm:px-8">
         {/* Top Metadata Strip */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline pb-4 mb-10 sm:mb-12 font-mono text-[11px] tracking-[0.13em] uppercase text-ink-muted">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline pb-4 mb-8 sm:mb-12 font-mono text-[11px] tracking-[0.13em] uppercase text-ink-muted">
           <div className="flex items-center gap-2.5">
             <span className="inline-block h-2 w-2 rounded-full bg-signal" />
             <span className="text-ink font-medium">INDEX // 01 — OVERVIEW</span>
@@ -168,60 +168,53 @@ export function HeroSection({
 
         {/* Main 12-Column Swiss Editorial Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-10 items-center">
-          {/* Left 7 Columns: Zero-CLS Stacked Stage (Multilingual Greeting -> Settled Hero) */}
-          <div className="lg:col-span-7 grid grid-cols-1">
-            {/* Layer A: Multilingual Greeting Stage (Urdu RTL -> English LTR, once per session) */}
-            <div
-              onClick={greetingActive ? skipGreeting : undefined}
-              aria-hidden={!greetingActive}
-              className={cn(
-                "hero-greeting-stage col-start-1 row-start-1 flex flex-col justify-between rounded-3xl border border-hairline bg-surface-1/80 p-6 sm:p-10 backdrop-blur-md transition-opacity duration-300",
-                greetingActive
-                  ? "opacity-100 visible cursor-pointer z-20"
-                  : "opacity-0 invisible pointer-events-none"
-              )}
-            >
-              <div className="flex items-center justify-between gap-3 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
-                <span className="inline-flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-signal" />
-                  <span>ISLAMABAD · CHITRAL · PAKISTAN</span>
-                </span>
-                <span>{activeGreeting.caption}</span>
-              </div>
+          {/* Left 7 Columns: Zero-CLS Greeting Stage + Hero Headline */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Fixed-Height Stacked Slot: Multilingual Greeting (First Load) <-> Identity Header */}
+            <div className="grid grid-cols-1 min-h-[112px] sm:min-h-[120px] items-center">
+              {/* Layer A: Urdu -> English Greeting Stage (plays once per session, skippable) */}
+              <div
+                onClick={greetingActive ? skipGreeting : undefined}
+                aria-hidden={!greetingActive}
+                className={cn(
+                  "hero-greeting-stage col-start-1 row-start-1 flex items-center justify-between gap-4 rounded-2xl border border-strong bg-surface-1/95 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-md transition-opacity duration-300",
+                  greetingActive
+                    ? "opacity-100 visible cursor-pointer z-20"
+                    : "opacity-0 invisible pointer-events-none"
+                )}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted mb-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-signal" />
+                    <span>{activeGreeting.caption}</span>
+                  </div>
 
-              <div className="my-8 sm:my-12 min-h-[150px] sm:min-h-[180px] flex items-center">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeGreeting.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                    lang={activeGreeting.lang}
-                    dir={activeGreeting.dir}
+                  <div
                     className={cn(
-                      "w-full text-ink",
-                      activeGreeting.lang === "ur"
-                        ? "urdu-nastaliq text-right text-[clamp(2.35rem,5.4vw,4.35rem)] font-bold"
-                        : "font-sans text-left text-[clamp(2.35rem,5.2vw,4.25rem)] font-extrabold tracking-[-0.035em] leading-[1.08]"
+                      "flex min-h-[54px] sm:min-h-[62px] items-center",
+                      activeGreeting.dir === "rtl" ? "justify-end" : "justify-start"
                     )}
                   >
-                    {activeGreeting.text}
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
-              <div className="flex items-center justify-between gap-4 border-t border-hairline pt-4">
-                <div className="flex items-center gap-1.5" aria-hidden="true">
-                  {GREETING_STEPS.map((s, idx) => (
-                    <span
-                      key={s.id}
-                      className={cn(
-                        "h-1.5 rounded-full transition-all duration-300",
-                        idx === stepIdx ? "w-8 bg-signal" : "w-2.5 bg-surface-2"
-                      )}
-                    />
-                  ))}
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={activeGreeting.id}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        lang={activeGreeting.lang}
+                        dir={activeGreeting.dir}
+                        className={cn(
+                          "inline-block w-fit text-ink",
+                          activeGreeting.lang === "ur"
+                            ? "urdu-nastaliq text-2xl sm:text-3xl font-bold"
+                            : "font-sans text-2xl sm:text-3xl font-extrabold tracking-[-0.03em]"
+                        )}
+                      >
+                        {activeGreeting.text}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
                 </div>
 
                 <button
@@ -231,104 +224,112 @@ export function HeroSection({
                     e.stopPropagation();
                     skipGreeting();
                   }}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-hairline bg-canvas px-4 py-2 font-mono text-[11px] font-medium text-ink-secondary hover:border-strong hover:text-ink transition-colors cursor-pointer"
+                  className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3.5 py-2 font-mono text-[11px] font-medium text-ink-secondary hover:border-strong hover:text-ink transition-colors cursor-pointer"
                 >
                   <span>Skip</span>
                   <SkipForward className="h-3.5 w-3.5 text-signal" />
                   <kbd
                     aria-hidden="true"
-                    className="rounded border border-hairline bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-muted"
+                    className="hidden sm:inline rounded border border-hairline bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-muted"
                   >
                     Esc
                   </kbd>
                 </button>
               </div>
-            </div>
 
-            {/* Layer B: Permanent Hero Copy (Reserves Exact Layout Height at All Times) */}
-            <div
-              className={cn(
-                "hero-settled-copy col-start-1 row-start-1 space-y-6 transition-opacity duration-300",
-                greetingActive ? "opacity-0 invisible pointer-events-none" : "opacity-100 visible"
-              )}
-            >
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-hairline bg-surface-1/90 px-4 py-2 backdrop-blur-sm">
-                <Code2 className="h-3.5 w-3.5 text-signal" />
-                <span className="font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-ink">
-                  {PROFILE.role}
+              {/* Layer B: Settled Identity Header */}
+              <div
+                className={cn(
+                  "hero-settled-badge col-start-1 row-start-1 flex flex-wrap items-center gap-3 transition-opacity duration-300",
+                  greetingActive ? "opacity-0 invisible pointer-events-none" : "opacity-100 visible"
+                )}
+              >
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-hairline bg-surface-1/90 px-4 py-2 backdrop-blur-sm">
+                  <Code2 className="h-3.5 w-3.5 text-signal" />
+                  <span className="font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-ink">
+                    {PROFILE.role}
+                  </span>
+                </div>
+                <span
+                  lang="ur"
+                  dir="rtl"
+                  className="urdu-nastaliq rounded-full border border-hairline bg-surface-1/70 px-3.5 py-0.5 text-sm font-bold text-ink-secondary"
+                >
+                  ہمدان علی
                 </span>
               </div>
+            </div>
 
-              <h1
-                id="hero-heading"
-                className="text-[clamp(2.45rem,5.4vw,5.15rem)] font-extrabold tracking-[-0.04em] leading-[1.01] text-ink"
-              >
-                Shipping{" "}
-                <span className="font-serif italic font-normal text-signal tracking-[-0.01em]">
-                  full-stack
-                </span>{" "}
-                products with{" "}
-                <span className="font-serif italic font-normal text-champagne tracking-[-0.01em]">
-                  AI
-                </span>{" "}
-                — built for real users.
-              </h1>
+            {/* Monumental Hero Headline (Painted Immediately on Frame 0 for Instant LCP) */}
+            <h1
+              id="hero-heading"
+              className="text-[clamp(2.45rem,5.4vw,5.15rem)] font-extrabold tracking-[-0.04em] leading-[1.01] text-ink"
+            >
+              Shipping{" "}
+              <span className="font-serif italic font-normal text-signal tracking-[-0.01em]">
+                full-stack
+              </span>{" "}
+              products with{" "}
+              <span className="font-serif italic font-normal text-champagne tracking-[-0.01em]">
+                AI
+              </span>{" "}
+              — built for real users.
+            </h1>
 
-              <p className="max-w-[60ch] text-base sm:text-lg leading-[1.68] text-ink-secondary">
-                I&apos;m <strong className="font-semibold text-ink">Hamdan Ali</strong>, a BS
-                Software Engineering student at Air University Islamabad and HindukushSoft alumnus.
-                I build <strong className="font-semibold text-ink">AI-powered</strong> web apps,
-                Flutter mobile tools, and clean REST APIs — from mountain hazard alerts in Chitral
-                to student admissions software.
-              </p>
+            <p className="max-w-[60ch] text-base sm:text-lg leading-[1.68] text-ink-secondary">
+              I&apos;m <strong className="font-semibold text-ink">Hamdan Ali</strong>, a BS
+              Software Engineering student at Air University Islamabad and HindukushSoft alumnus.
+              I build <strong className="font-semibold text-ink">AI-powered</strong> web apps,
+              Flutter mobile tools, and clean REST APIs — from mountain hazard alerts in Chitral
+              to student admissions software.
+            </p>
 
-              {/* Primary Action Row (All >= 44px tap targets) */}
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                <Magnetic strength={0.2}>
+            {/* Primary Action Row (All >= 44px tap targets) */}
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              <Magnetic strength={0.2}>
+                <a
+                  href="#work"
+                  data-cursor-label="EXPLORE"
+                  className="inline-flex min-h-11 items-center gap-2.5 rounded-full bg-signal-fill px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_26px_-10px_rgba(194,46,6,0.75)] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.99]"
+                >
+                  <span>Explore Selected Work</span>
+                  <ArrowDownRight className="h-4 w-4" />
+                </a>
+              </Magnetic>
+
+              {hasEventsSection && (
+                <Magnetic strength={0.16}>
                   <a
-                    href="#work"
-                    data-cursor-label="EXPLORE"
-                    className="inline-flex min-h-11 items-center gap-2.5 rounded-full bg-signal-fill px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_26px_-10px_rgba(194,46,6,0.75)] transition-transform duration-200 hover:scale-[1.02] active:scale-[0.99]"
+                    href="#field-notes"
+                    data-cursor-label="GALLERY"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-strong bg-surface-1/90 px-5 py-3 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-surface-2"
                   >
-                    <span>Explore Selected Work</span>
-                    <ArrowDownRight className="h-4 w-4" />
+                    <Camera className="h-4 w-4 text-signal" />
+                    <span>Field Notes &amp; Gallery</span>
                   </a>
                 </Magnetic>
+              )}
 
-                {hasEventsSection && (
-                  <Magnetic strength={0.16}>
-                    <a
-                      href="#field-notes"
-                      data-cursor-label="GALLERY"
-                      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-strong bg-surface-1/90 px-5 py-3 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-surface-2"
-                    >
-                      <Camera className="h-4 w-4 text-signal" />
-                      <span>Field Notes &amp; Gallery</span>
-                    </a>
-                  </Magnetic>
-                )}
-
-                <Magnetic strength={0.16}>
-                  <button
-                    type="button"
-                    onClick={handleCopyEmail}
-                    data-cursor-label="COPY EMAIL"
-                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-hairline bg-surface-1/80 px-4.5 py-3 font-mono text-xs font-medium text-ink-secondary transition-colors duration-200 hover:border-strong hover:text-ink cursor-pointer"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="h-3.5 w-3.5 text-telemetry" />
-                        <span className="text-telemetry">Copied {PROFILE.email}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5 text-signal" />
-                        <span>{PROFILE.email}</span>
-                      </>
-                    )}
-                  </button>
-                </Magnetic>
-              </div>
+              <Magnetic strength={0.16}>
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  data-cursor-label="COPY EMAIL"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-hairline bg-surface-1/80 px-4.5 py-3 font-mono text-xs font-medium text-ink-secondary transition-colors duration-200 hover:border-strong hover:text-ink cursor-pointer"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-telemetry" />
+                      <span className="text-telemetry">Copied {PROFILE.email}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5 text-signal" />
+                      <span>{PROFILE.email}</span>
+                    </>
+                  )}
+                </button>
+              </Magnetic>
             </div>
           </div>
 
