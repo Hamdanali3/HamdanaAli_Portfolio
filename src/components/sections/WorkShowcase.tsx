@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "motion/react";
-import { ArrowUpRight, ExternalLink, Layers } from "lucide-react";
+import { ArrowUpRight, ExternalLink, FileText, Layers } from "lucide-react";
 import { GitHubMark } from "@/components/ui/GitHubMark";
 import { PROJECTS, type PortfolioProject } from "@/data/portfolio";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
@@ -33,23 +33,22 @@ export function WorkShowcase({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-14">
           <div className="space-y-3">
             <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-signal">
-              INDEX // 02 — SELECTED SYSTEMS (2025–2026)
+              INDEX // 02 — SELECTED WORK (2025–2026)
             </div>
             <h2
               id="work-heading"
               className="text-[clamp(2rem,4.2vw,3.75rem)] font-extrabold tracking-[-0.035em] leading-[1.03] text-ink"
             >
-              <RevealText text="Production platforms &" as="span" />{" "}
+              <RevealText text="Shipped products &" as="span" />{" "}
               <span className="font-serif italic font-normal text-signal">
                 interactive
               </span>{" "}
-              <RevealText text="telemetry." as="span" delay={0.12} />
+              <RevealText text="previews." as="span" delay={0.06} />
             </h2>
           </div>
           <p className="max-w-md text-sm leading-relaxed text-ink-secondary">
-            Every flagship card below embeds a live interactive instrument modeled on the actual
-            system architecture. Click any project to inspect its engineering trade-offs, release
-            metrics, and repository artifacts.
+            Every featured card embeds a live interactive preview modeled on the real codebase.
+            Open any project to inspect its architecture, test metrics, and repository links.
           </p>
         </div>
 
@@ -62,10 +61,10 @@ export function WorkShowcase({
             return (
               <motion.article
                 key={project.id}
-                initial={{ opacity: 0, y: 28 }}
+                initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.68, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
               >
                 <SpotlightCard showFiducials className="p-6 sm:p-8 lg:p-10">
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
@@ -77,7 +76,7 @@ export function WorkShowcase({
                       )}
                     >
                       <div className="flex flex-wrap items-center gap-2.5 font-mono text-[11px]">
-                        <span className="rounded-md bg-signal/15 px-2 py-0.5 font-semibold text-signal tabular-nums">
+                        <span className="rounded-md bg-signal-fill px-2 py-0.5 font-semibold text-white tabular-nums">
                           {project.index}
                         </span>
                         <span className="uppercase tracking-[0.12em] text-ink-muted">
@@ -134,16 +133,16 @@ export function WorkShowcase({
                         ))}
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex flex-wrap items-center gap-3 pt-2">
+                      {/* Action Buttons (>= 44px tap targets) */}
+                      <div className="flex flex-wrap items-center gap-2.5 pt-2">
                         <button
                           type="button"
                           onClick={() => onOpenProject(project)}
                           data-cursor-label="OPEN CASE ↗"
-                          className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-xs font-semibold text-canvas transition-transform hover:scale-[1.02] cursor-pointer"
+                          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-xs font-semibold text-canvas transition-transform duration-200 hover:scale-[1.02] cursor-pointer"
                         >
                           <Layers className="h-3.5 w-3.5 text-signal" />
-                          <span>Deep-Dive Architecture</span>
+                          <span>View Case Study</span>
                           <ArrowUpRight className="h-3.5 w-3.5" />
                         </button>
 
@@ -153,9 +152,9 @@ export function WorkShowcase({
                             target="_blank"
                             rel="noopener noreferrer"
                             data-cursor-label="LIVE APP ↗"
-                            className="inline-flex items-center gap-1.5 rounded-full border border-signal/50 bg-signal/10 px-4 py-2.5 text-xs font-semibold text-signal transition-colors hover:bg-signal hover:text-white"
+                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-strong bg-surface-2/80 px-4 py-2.5 text-xs font-semibold text-signal transition-colors duration-200 hover:bg-signal-fill hover:border-signal-fill hover:text-white"
                           >
-                            <span>Live Deployment</span>
+                            <span>Live App</span>
                             <ExternalLink className="h-3.5 w-3.5" />
                           </a>
                         )}
@@ -165,11 +164,24 @@ export function WorkShowcase({
                           target="_blank"
                           rel="noopener noreferrer"
                           data-cursor-label="GITHUB ↗"
-                          className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface-2/60 px-4 py-2.5 text-xs font-medium text-ink-secondary transition-colors hover:border-strong hover:text-ink"
+                          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-surface-2/60 px-4 py-2.5 text-xs font-medium text-ink-secondary transition-colors duration-200 hover:border-strong hover:text-ink"
                         >
                           <GitHubMark className="h-3.5 w-3.5" />
                           <span>Source</span>
                         </a>
+
+                        {project.paperUrl && (
+                          <a
+                            href={project.paperUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-cursor-label="STUDY PDF ↗"
+                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 py-2.5 font-mono text-[11px] font-medium text-ink-muted underline decoration-hairline underline-offset-4 transition-colors duration-200 hover:text-ink"
+                          >
+                            <FileText className="h-3.5 w-3.5 text-champagne" />
+                            <span>Study PDF ↗</span>
+                          </a>
+                        )}
                       </div>
                     </div>
 
@@ -199,12 +211,12 @@ export function WorkShowcase({
 
         {/* Engineering Archive Sub-Grid (Projects 05 & 06) */}
         <div className="mt-14 pt-12 border-t border-hairline">
-          <div className="mb-6 flex items-center justify-between">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-ink-muted">
-              INTERNSHIP CAPSTONE &amp; SYSTEMS ARCHIVE (05 — 06)
+              INTERNSHIP &amp; FULL-STACK ARCHIVE (05 — 06)
             </h3>
             <span className="font-mono text-[11px] text-ink-muted">
-              Click any card for architectural notes
+              Click any card for implementation details
             </span>
           </div>
 
@@ -225,7 +237,7 @@ export function WorkShowcase({
                         <span className="text-signal font-semibold">
                           {proj.index} {"//"} {proj.accentTag}
                         </span>
-                        <ArrowUpRight className="h-4 w-4 text-ink-muted transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-signal" />
+                        <ArrowUpRight className="h-4 w-4 text-ink-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-signal" />
                       </div>
                       <h4
                         style={

@@ -1,25 +1,33 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
-const SECTIONS = [
-  { id: "overview", index: "01", label: "Overview" },
-  { id: "work", index: "02", label: "Selected Work" },
-  { id: "research", index: "03", label: "IEEE Research" },
-  { id: "architecture", index: "04", label: "Architecture" },
-  { id: "journey", index: "05", label: "Journey" },
-  { id: "contact", index: "06", label: "Contact" },
-];
-
 export function ScrollProgressAndSpine({
+  hasEventsSection = true,
   onSectionChange,
 }: {
+  hasEventsSection?: boolean;
   onSectionChange?: (id: string) => void;
 }) {
   const barRef = useRef<HTMLDivElement>(null);
   const [activeId, setActiveId] = useState("overview");
+
+  const sections = useMemo(() => {
+    const raw = [
+      { id: "overview", label: "Overview" },
+      { id: "work", label: "Selected Work" },
+      ...(hasEventsSection ? [{ id: "field-notes", label: "Field Notes" }] : []),
+      { id: "architecture", label: "Capabilities" },
+      { id: "journey", label: "Journey" },
+      { id: "contact", label: "Contact" },
+    ];
+    return raw.map((item, idx) => ({
+      ...item,
+      index: String(idx + 1).padStart(2, "0"),
+    }));
+  }, [hasEventsSection]);
 
   // Fallback for browsers without native CSS scroll-driven animation-timeline
   useEffect(() => {
@@ -71,17 +79,16 @@ export function ScrollProgressAndSpine({
       }
     );
 
-    SECTIONS.forEach(({ id }) => {
+    sections.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
 
     return () => observer.disconnect();
-  }, [onSectionChange]);
+  }, [onSectionChange, sections]);
 
   return (
     <>
-      {/* MANDATORY aria-hidden="true" on purely visual scroll progress bar */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed top-0 left-0 right-0 z-[100] h-[2px] bg-transparent"
@@ -92,19 +99,19 @@ export function ScrollProgressAndSpine({
         />
       </div>
 
-      {/* Desktop Right-Edge Section Telemetry Spine */}
+      {/* Desktop Right-Edge Section Spine */}
       <aside
         aria-label="Page section index"
-        className="fixed right-3.5 top-1/2 z-40 hidden -translate-y-1/2 xl:flex flex-col items-end gap-3"
+        className="fixed right-3 top-1/2 z-40 hidden -translate-y-1/2 xl:flex flex-col items-end gap-1"
       >
-        {SECTIONS.map((sec) => {
+        {sections.map((sec) => {
           const isActive = activeId === sec.id;
           return (
             <a
               key={sec.id}
               href={`#${sec.id}`}
               aria-label={`${sec.index} ${sec.label}`}
-              className="group flex items-center gap-2 py-0.5 text-right focus:outline-none"
+              className="group flex min-h-11 min-w-11 items-center justify-end gap-2 px-1 text-right focus:outline-none"
             >
               <span
                 className={cn(
@@ -117,17 +124,17 @@ export function ScrollProgressAndSpine({
               <span className="relative flex h-4 w-4 items-center justify-center">
                 <span
                   className={cn(
-                    "h-[1.5px] transition-all duration-300",
+                    "h-[1.5px] transition-all duration-200",
                     isActive
                       ? "w-4 bg-signal"
-                      : "w-2 bg-ink-muted/45 group-hover:w-3.5 group-hover:bg-ink"
+                      : "w-2 bg-ink-muted/55 group-hover:w-3.5 group-hover:bg-ink"
                   )}
                 />
                 {isActive && (
                   <motion.span
                     layoutId="spine-active-dot"
                     className="absolute -right-1 h-1.5 w-1.5 rounded-full bg-signal"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                   />
                 )}
               </span>

@@ -3,9 +3,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowUpRight,
+  Camera,
   Check,
+  Compass,
   Copy,
-  FileText,
   FolderGit2,
   Globe,
   Layers,
@@ -15,12 +16,13 @@ import {
   Sun,
   X,
 } from "lucide-react";
-import { IEEE_RESEARCH, PROFILE, PROJECTS, type PortfolioProject } from "@/data/portfolio";
+import { PROFILE, PROJECTS, type PortfolioProject } from "@/data/portfolio";
 import { bindDialogDismissHandlers, closeDialogSmoothly, cn } from "@/lib/utils";
 import type { ThemeChoice } from "@/components/chrome/NavbarDock";
 
 interface CommandPaletteProps {
   open: boolean;
+  hasEventsSection?: boolean;
   onClose: () => void;
   onSelectProject: (project: PortfolioProject) => void;
   onSelectTheme: (choice: ThemeChoice) => void;
@@ -29,9 +31,10 @@ interface CommandPaletteProps {
 type IconKey =
   | "layers"
   | "globe"
+  | "camera"
+  | "compass"
   | "copy"
   | "check"
-  | "file"
   | "git"
   | "moon"
   | "sun"
@@ -39,6 +42,7 @@ type IconKey =
 
 type ActionKind =
   | { type: "project"; project: PortfolioProject }
+  | { type: "section"; sectionId: string }
   | { type: "url"; url: string }
   | { type: "copy-email" }
   | { type: "theme"; choice: ThemeChoice };
@@ -58,12 +62,14 @@ function CommandIcon({ iconKey }: { iconKey: IconKey }) {
       return <Layers className="h-4 w-4" />;
     case "globe":
       return <Globe className="h-4 w-4" />;
+    case "camera":
+      return <Camera className="h-4 w-4" />;
+    case "compass":
+      return <Compass className="h-4 w-4" />;
     case "copy":
       return <Copy className="h-4 w-4" />;
     case "check":
       return <Check className="h-4 w-4" />;
-    case "file":
-      return <FileText className="h-4 w-4" />;
     case "git":
       return <FolderGit2 className="h-4 w-4" />;
     case "moon":
@@ -77,6 +83,7 @@ function CommandIcon({ iconKey }: { iconKey: IconKey }) {
 
 export function CommandPalette({
   open,
+  hasEventsSection = true,
   onClose,
   onSelectProject,
   onSelectTheme,
@@ -109,9 +116,56 @@ export function CommandPalette({
   }, [requestClose]);
 
   const actions = useMemo<CommandAction[]>(() => {
+    const sectionJumps: CommandAction[] = [
+      {
+        id: "sec-work",
+        group: "Sections",
+        title: "02 · Selected Work",
+        subtitle: "Shipped web, mobile & AI case studies",
+        iconKey: "compass",
+        kind: { type: "section", sectionId: "work" },
+      },
+      ...(hasEventsSection
+        ? [
+            {
+              id: "sec-field-notes",
+              group: "Sections",
+              title: "03 · Field Notes & Gallery",
+              subtitle: "Top 5 featured event highlights & photo lightbox",
+              iconKey: "camera" as const,
+              kind: { type: "section" as const, sectionId: "field-notes" },
+            },
+          ]
+        : []),
+      {
+        id: "sec-stack",
+        group: "Sections",
+        title: `${hasEventsSection ? "04" : "03"} · Capabilities & Stack`,
+        subtitle: "Next.js, Laravel 12, Flutter, Python & AI guardrails",
+        iconKey: "compass",
+        kind: { type: "section", sectionId: "architecture" },
+      },
+      {
+        id: "sec-journey",
+        group: "Sections",
+        title: `${hasEventsSection ? "05" : "04"} · Journey`,
+        subtitle: "HindukushSoft internship, shipped apps & Air University",
+        iconKey: "compass",
+        kind: { type: "section", sectionId: "journey" },
+      },
+      {
+        id: "sec-contact",
+        group: "Sections",
+        title: `${hasEventsSection ? "06" : "05"} · Contact`,
+        subtitle: "Send a direct message or copy email",
+        iconKey: "compass",
+        kind: { type: "section", sectionId: "contact" },
+      },
+    ];
+
     const projectActions: CommandAction[] = PROJECTS.map((p) => ({
       id: `case-${p.id}`,
-      group: "Engineering Case Studies",
+      group: "Project Case Studies",
       title: `${p.index}. ${p.title}`,
       subtitle: p.subtitle,
       iconKey: "layers",
@@ -127,28 +181,20 @@ export function CommandPalette({
       kind: { type: "url", url: p.liveUrl! },
     }));
 
-    const quickNav: CommandAction[] = [
+    const quickActions: CommandAction[] = [
       {
         id: "copy-email",
         group: "Direct Actions",
         title: copiedEmail ? "Copied Hamdanaly651@gmail.com!" : `Copy Email (${PROFILE.email})`,
-        subtitle: "Direct inbox for engineering roles & collaborations",
+        subtitle: "Direct inbox for full-stack & AI product roles",
         iconKey: copiedEmail ? "check" : "copy",
         kind: { type: "copy-email" },
-      },
-      {
-        id: "open-ieee-paper",
-        group: "Direct Actions",
-        title: "Read IEEE PP-PSFE Manuscript (PDF)",
-        subtitle: IEEE_RESEARCH.title,
-        iconKey: "file",
-        kind: { type: "url", url: IEEE_RESEARCH.pdfUrl },
       },
       {
         id: "open-github",
         group: "Direct Actions",
         title: "Open GitHub Profile (@Hamdanali3)",
-        subtitle: "Inspect all 8 public repositories & commit history",
+        subtitle: "Browse public repositories & commit history",
         iconKey: "git",
         kind: { type: "url", url: PROFILE.github },
       },
@@ -156,7 +202,7 @@ export function CommandPalette({
         id: "theme-dark",
         group: "Appearance",
         title: "Switch to Obsidian Dark Mode",
-        subtitle: "High-contrast control-room palette",
+        subtitle: "High-contrast dark palette",
         iconKey: "moon",
         kind: { type: "theme", choice: "dark" },
       },
@@ -164,7 +210,7 @@ export function CommandPalette({
         id: "theme-light",
         group: "Appearance",
         title: "Switch to Archival Paper Light Mode",
-        subtitle: "Warm Swiss editorial paper palette",
+        subtitle: "Warm editorial paper palette",
         iconKey: "sun",
         kind: { type: "theme", choice: "light" },
       },
@@ -178,8 +224,8 @@ export function CommandPalette({
       },
     ];
 
-    return [...quickNav, ...liveDeployments, ...projectActions];
-  }, [copiedEmail]);
+    return [...sectionJumps, ...liveDeployments, ...projectActions, ...quickActions];
+  }, [copiedEmail, hasEventsSection]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -200,6 +246,14 @@ export function CommandPalette({
         setTimeout(() => setCopiedEmail(false), 2000);
         return;
       }
+      if (kind.type === "section") {
+        const targetId = kind.sectionId;
+        requestClose();
+        setTimeout(() => {
+          document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
+        }, 120);
+        return;
+      }
       if (kind.type === "url") {
         window.open(kind.url, "_blank", "noopener,noreferrer");
         requestClose();
@@ -213,7 +267,7 @@ export function CommandPalette({
       if (kind.type === "project") {
         const proj = kind.project;
         requestClose();
-        setTimeout(() => onSelectProject(proj), 160);
+        setTimeout(() => onSelectProject(proj), 140);
       }
     },
     [onSelectProject, onSelectTheme, requestClose]
@@ -248,7 +302,7 @@ export function CommandPalette({
         </h2>
 
         {/* Search Input Bar */}
-        <div className="flex items-center gap-3 border-b border-hairline px-4 py-3.5">
+        <div className="flex items-center gap-3 border-b border-hairline px-4 py-3">
           <Search className="h-4 w-4 shrink-0 text-signal" />
           <input
             ref={inputRef}
@@ -258,16 +312,16 @@ export function CommandPalette({
               setQuery(e.target.value);
               setSelectedIndex(0);
             }}
-            placeholder="Jump to project, launch live app, read IEEE paper, or switch theme..."
+            placeholder="Jump to project, Field Notes gallery, live app, or switch theme..."
             className="w-full bg-transparent text-sm text-ink placeholder:text-ink-muted focus:outline-none"
           />
           <button
             type="button"
             onClick={requestClose}
             aria-label="Close command palette"
-            className="rounded-lg border border-hairline p-1 text-ink-muted hover:text-ink cursor-pointer"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-hairline text-ink-muted hover:text-ink cursor-pointer"
           >
-            <X className="h-3.5 w-3.5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
@@ -275,7 +329,7 @@ export function CommandPalette({
         <div className="overflow-y-auto p-2 space-y-1">
           {filtered.length === 0 ? (
             <p className="py-10 text-center font-mono text-xs text-ink-muted">
-              No matching commands or repositories for &ldquo;{query}&rdquo;.
+              No matching commands or projects for &ldquo;{query}&rdquo;.
             </p>
           ) : (
             filtered.map((item, idx) => {
@@ -293,7 +347,7 @@ export function CommandPalette({
                     onMouseEnter={() => setSelectedIndex(idx)}
                     onClick={() => executeAction(item.kind)}
                     className={cn(
-                      "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition-colors cursor-pointer",
+                      "flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition-colors cursor-pointer",
                       isSelected ? "bg-surface-2 text-ink" : "text-ink-secondary hover:bg-surface-2/60"
                     )}
                   >
@@ -301,7 +355,9 @@ export function CommandPalette({
                       <span
                         className={cn(
                           "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-hairline",
-                          isSelected ? "bg-signal text-white border-signal" : "bg-canvas text-ink-secondary"
+                          isSelected
+                            ? "bg-signal-fill text-white border-signal-fill"
+                            : "bg-canvas text-ink-secondary"
                         )}
                       >
                         <CommandIcon iconKey={item.iconKey} />
@@ -317,8 +373,8 @@ export function CommandPalette({
                     </div>
                     <ArrowUpRight
                       className={cn(
-                        "h-3.5 w-3.5 shrink-0 transition-transform",
-                        isSelected ? "text-signal translate-x-0.5 -translate-y-0.5" : "text-ink-muted/50"
+                        "h-3.5 w-3.5 shrink-0 transition-transform duration-200",
+                        isSelected ? "text-signal translate-x-0.5 -translate-y-0.5" : "text-ink-muted/60"
                       )}
                     />
                   </button>
@@ -332,10 +388,10 @@ export function CommandPalette({
         <div className="flex items-center justify-between border-t border-hairline bg-canvas/50 px-4 py-2.5 font-mono text-[10px] text-ink-muted">
           <div className="flex items-center gap-3">
             <span>↑↓ Navigate</span>
-            <span>↵ Execute</span>
-            <span>ESC Dismiss</span>
+            <span>↵ Select</span>
+            <span>ESC Close</span>
           </div>
-          <span>HAMDAN ALI {"//"} CMD</span>
+          <span>HAMDAN ALI {"//"} FULL-STACK · AI</span>
         </div>
       </div>
     </dialog>

@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   CheckCircle2,
   ExternalLink,
+  FileText,
   Image as ImageIcon,
   Shield,
   X,
@@ -71,19 +72,21 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
       {project && (
         <div className="flex flex-col max-h-[88vh]">
           {/* Sticky Top Bar */}
-          <div className="flex items-center justify-between gap-4 border-b border-hairline bg-surface-1/95 px-6 py-4 backdrop-blur-md">
-            <div className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted">
-              <span className="text-signal font-semibold">CASE {"//"} {project.index}</span>
-              <span>·</span>
+          <div className="flex items-center justify-between gap-4 border-b border-hairline bg-surface-1/95 px-6 py-3.5 backdrop-blur-md">
+            <div className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted min-w-0">
+              <span className="text-signal font-semibold shrink-0">
+                CASE {"//"} {project.index}
+              </span>
+              <span aria-hidden="true">·</span>
               <span className="truncate">{project.category}</span>
             </div>
             <button
               type="button"
               onClick={requestClose}
               aria-label="Close case study dialog"
-              className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-3 py-1.5 font-mono text-[11px] text-ink-secondary hover:border-strong hover:text-ink cursor-pointer"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-4 py-2 font-mono text-[11px] text-ink-secondary hover:border-strong hover:text-ink cursor-pointer shrink-0"
             >
-              <span>ESC</span>
+              <span aria-hidden="true">ESC</span>
               <X className="h-3.5 w-3.5" />
             </button>
           </div>
@@ -92,7 +95,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
           <div className="overflow-y-auto p-6 sm:p-10 space-y-8">
             {/* Hero Title & Links */}
             <div className="space-y-4">
-              <span className="inline-block rounded-full border border-signal/35 bg-signal/10 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-signal">
+              <span className="inline-block rounded-full border border-strong bg-surface-2 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-signal">
                 {project.accentTag}
               </span>
 
@@ -115,7 +118,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-signal px-5 py-2.5 text-xs font-semibold text-white hover:opacity-95"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-full bg-signal-fill px-5 py-2.5 text-xs font-semibold text-white hover:opacity-95"
                   >
                     <span>Launch Live Application</span>
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -125,11 +128,22 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
                   href={project.repoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-strong bg-surface-2 px-5 py-2.5 text-xs font-semibold text-ink hover:border-signal"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-strong bg-surface-2 px-5 py-2.5 text-xs font-semibold text-ink hover:border-signal"
                 >
                   <GitHubMark className="h-3.5 w-3.5" />
                   <span>Inspect GitHub Repository</span>
                 </a>
+                {project.paperUrl && (
+                  <a
+                    href={project.paperUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-hairline bg-canvas px-4 py-2.5 text-xs font-medium text-ink-secondary hover:border-strong hover:text-ink"
+                  >
+                    <FileText className="h-3.5 w-3.5 text-champagne" />
+                    <span>Study Manuscript (PDF)</span>
+                  </a>
+                )}
               </div>
             </div>
 
@@ -152,7 +166,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="rounded-2xl border border-hairline bg-canvas/70 p-6 space-y-2.5">
                 <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-signal">
-                  01 {"//"} THE REAL-WORLD PROBLEM
+                  01 {"//"} THE PROBLEM
                 </div>
                 <p className="text-sm leading-[1.7] text-ink-secondary">
                   {project.problemStatement}
@@ -160,7 +174,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
               </div>
               <div className="rounded-2xl border border-hairline bg-canvas/70 p-6 space-y-2.5">
                 <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-telemetry">
-                  02 {"//"} SYSTEM ARCHITECTURE
+                  02 {"//"} IMPLEMENTATION ARCHITECTURE
                 </div>
                 <p className="text-sm leading-[1.7] text-ink-secondary">
                   {project.architectureSummary}
@@ -174,7 +188,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-ink">
                     <ImageIcon className="h-3.5 w-3.5 text-signal" />
-                    <span>VERIFIED REPOSITORY ARTIFACTS &amp; UI SCREENS</span>
+                    <span>REPOSITORY ARTIFACTS &amp; UI SCREENS</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {project.screenshots.map((shot, idx) => (
@@ -185,9 +199,9 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
                           setShotSelection({ projectId: project.id, idx })
                         }
                         className={cn(
-                          "rounded-full border px-3 py-1 font-mono text-[10px] transition-colors cursor-pointer",
+                          "min-h-11 rounded-full border px-3.5 py-2 font-mono text-[10px] transition-colors cursor-pointer",
                           activeShotIdx === idx
-                            ? "border-signal bg-signal text-white font-semibold"
+                            ? "border-signal-fill bg-signal-fill text-white font-semibold"
                             : "border-hairline bg-canvas text-ink-secondary hover:text-ink"
                         )}
                       >
@@ -218,7 +232,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
             <div className="space-y-4">
               <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-ink">
                 <Shield className="h-3.5 w-3.5 text-signal" />
-                <span>KEY ENGINEERING DECISIONS &amp; TRADE-OFFS</span>
+                <span>KEY ENGINEERING DECISIONS &amp; VERIFICATION</span>
               </div>
               <ul className="space-y-3">
                 {project.engineeringHighlights.map((item, idx) => (
@@ -236,7 +250,7 @@ export function CaseStudyDialog({ project, onClose }: CaseStudyDialogProps) {
             {/* Full Technology Stack */}
             <div className="border-t border-hairline pt-6">
               <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted">
-                COMPLETE TECHNOLOGY &amp; INFRASTRUCTURE STACK
+                TECHNOLOGY STACK
               </div>
               <div className="flex flex-wrap gap-2">
                 {project.stack.map((s) => (

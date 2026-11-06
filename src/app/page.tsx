@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
-import { CalibrationPreloader } from "@/components/chrome/CalibrationPreloader";
 import { CustomCursor } from "@/components/chrome/CustomCursor";
 import { ScrollProgressAndSpine } from "@/components/chrome/ScrollProgressAndSpine";
 import { NavbarDock, type ThemeChoice } from "@/components/chrome/NavbarDock";
@@ -9,13 +8,23 @@ import { CommandPalette } from "@/components/chrome/CommandPalette";
 import { HeroSection } from "@/components/hero/HeroSection";
 import { VelocityMarquee } from "@/components/sections/VelocityMarquee";
 import { WorkShowcase } from "@/components/sections/WorkShowcase";
+import { FieldNotesGallery } from "@/components/sections/FieldNotesGallery";
 import { ResearchSpotlight } from "@/components/sections/ResearchSpotlight";
 import { ArchitectureBento } from "@/components/sections/ArchitectureBento";
 import { JourneyTimeline } from "@/components/sections/JourneyTimeline";
 import { ContactFooter } from "@/components/sections/ContactFooter";
 import { CaseStudyDialog } from "@/components/sections/CaseStudyDialog";
+import { EVENTS } from "@/content/events";
 import type { PortfolioProject } from "@/data/portfolio";
 import { runViewTransition } from "@/lib/utils";
+
+/**
+ * FEATURE FLAG — Preserved IEEE ML Security Section:
+ * Currently demoted to a project card ("Edge-IIoTset & PP-PSFE: ML security study")
+ * inside Selected Work. Flip `ENABLE_RESEARCH_SPOTLIGHT` to `true` in the future
+ * when ready to restore a standalone multi-study research section.
+ */
+const ENABLE_RESEARCH_SPOTLIGHT = false;
 
 const themeListeners = new Set<() => void>();
 
@@ -57,6 +66,8 @@ export default function PortfolioPage() {
   const [commandOpen, setCommandOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<PortfolioProject | null>(null);
   const [transitionProjectId, setTransitionProjectId] = useState<string | null>(null);
+
+  const hasEventsSection = EVENTS.length > 0;
 
   const themeChoice = useSyncExternalStore(
     subscribeTheme,
@@ -109,25 +120,32 @@ export default function PortfolioPage() {
 
   return (
     <>
-      <CalibrationPreloader />
       <CustomCursor />
-      <ScrollProgressAndSpine onSectionChange={setActiveSection} />
+      <ScrollProgressAndSpine
+        hasEventsSection={hasEventsSection}
+        onSectionChange={setActiveSection}
+      />
 
       <NavbarDock
         activeSection={activeSection}
+        hasEventsSection={hasEventsSection}
         onOpenCommandPalette={() => setCommandOpen(true)}
         themeChoice={themeChoice}
         onSelectTheme={handleSelectTheme}
       />
 
       <main id="main-content" className="flex-1">
-        <HeroSection onOpenCommandPalette={() => setCommandOpen(true)} />
+        <HeroSection
+          onOpenCommandPalette={() => setCommandOpen(true)}
+          hasEventsSection={hasEventsSection}
+        />
         <VelocityMarquee />
         <WorkShowcase
           activeTransitionProjectId={transitionProjectId}
           onOpenProject={handleOpenProject}
         />
-        <ResearchSpotlight />
+        <FieldNotesGallery events={EVENTS} />
+        {ENABLE_RESEARCH_SPOTLIGHT && <ResearchSpotlight />}
         <ArchitectureBento onOpenProject={handleOpenProject} />
         <JourneyTimeline />
       </main>
@@ -138,6 +156,7 @@ export default function PortfolioPage() {
 
       <CommandPalette
         open={commandOpen}
+        hasEventsSection={hasEventsSection}
         onClose={() => setCommandOpen(false)}
         onSelectProject={handleOpenProject}
         onSelectTheme={handleSelectTheme}
