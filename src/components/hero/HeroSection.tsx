@@ -52,15 +52,6 @@ const MULTILINGUAL_IDENTITIES: readonly MultilingualIdentity[] = [
     phonetic: "Main Hamdan Ali hoon",
   },
   {
-    id: "khw",
-    text: "آوا ہمدان علی رومان",
-    lang: "khw",
-    dir: "rtl",
-    languageName: "کھوار (Khowar · Chitral)",
-    flag: "🏔️",
-    phonetic: "Awa Hamdan Ali roman",
-  },
-  {
     id: "ar",
     text: "أنا حمدان علي",
     lang: "ar",
@@ -238,7 +229,7 @@ export function HeroSection({
                       dir={activeIdentity.dir}
                       className={cn(
                         "inline-block w-fit",
-                        activeIdentity.lang === "ur" || activeIdentity.lang === "khw"
+                        activeIdentity.lang === "ur"
                           ? "urdu-nastaliq text-3xl sm:text-4xl font-bold leading-[2.1] text-ink"
                           : "font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] leading-tight text-ink"
                       )}
