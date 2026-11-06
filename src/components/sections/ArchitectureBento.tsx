@@ -17,10 +17,10 @@ import { cn } from "@/lib/utils";
 type DomainFilter = "all" | CapabilityItem["domain"];
 
 const DOMAIN_FILTERS: { id: DomainFilter; label: string }[] = [
-  { id: "all", label: "All Domains (09)" },
+  { id: "all", label: "All Stack (09)" },
   { id: "fullstack", label: "Full-Stack Web" },
-  { id: "ai-security", label: "AI & ML Security" },
-  { id: "mobile", label: "Mobile Systems" },
+  { id: "ai-products", label: "AI & ML Pipelines" },
+  { id: "mobile", label: "Mobile Apps" },
   { id: "data-devops", label: "Data, Cloud & CI/CD" },
 ];
 
@@ -49,7 +49,7 @@ export function ArchitectureBento({ onOpenProject }: ArchitectureBentoProps) {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-hairline pb-8">
           <div className="space-y-3">
             <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-signal">
-              INDEX // 04 — PROOF-BACKED CAPABILITY MATRIX
+              INDEX // 04 — PROOF-BACKED STACK
             </div>
             <h2
               id="architecture-heading"
@@ -57,15 +57,15 @@ export function ArchitectureBento({ onOpenProject }: ArchitectureBentoProps) {
             >
               <RevealText text="Zero arbitrary bars —" as="span" />{" "}
               <span className="font-serif italic font-normal text-signal">
-                every skill
+                every tool
               </span>{" "}
-              <RevealText text="linked to shipped code." as="span" delay={0.1} />
+              <RevealText text="linked to shipped code." as="span" delay={0.06} />
             </h2>
           </div>
 
           <div
             role="tablist"
-            aria-label="Filter capabilities by engineering domain"
+            aria-label="Filter capabilities by domain"
             className="flex flex-wrap gap-1.5 rounded-2xl border border-hairline bg-surface-1 p-1.5"
           >
             {DOMAIN_FILTERS.map((tab) => {
@@ -78,15 +78,15 @@ export function ArchitectureBento({ onOpenProject }: ArchitectureBentoProps) {
                   type="button"
                   onClick={() => setFilter(tab.id)}
                   className={cn(
-                    "relative rounded-xl px-3.5 py-1.5 font-mono text-[11px] transition-colors cursor-pointer",
+                    "relative min-h-11 rounded-xl px-3.5 py-2 font-mono text-[11px] transition-colors cursor-pointer",
                     active ? "text-white font-semibold" : "text-ink-secondary hover:text-ink"
                   )}
                 >
                   {active && (
                     <motion.span
                       layoutId="capability-domain-pill"
-                      className="absolute inset-0 rounded-xl bg-signal"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      className="absolute inset-0 rounded-xl bg-signal-fill"
+                      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                     />
                   )}
                   <span className="relative z-10">{tab.label}</span>
@@ -103,17 +103,17 @@ export function ArchitectureBento({ onOpenProject }: ArchitectureBentoProps) {
               <motion.div
                 key={cap.name}
                 layout
-                initial={{ opacity: 0, scale: 0.96 }}
+                initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                exit={{ opacity: 0, scale: 0.97 }}
+                transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
               >
                 <SpotlightCard className="p-6 h-full flex flex-col justify-between space-y-5">
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-telemetry flex items-center gap-1.5">
                         <CheckCircle2 className="h-3.5 w-3.5" />
-                        VERIFIED IN PRODUCTION
+                        SHIPPED IN CODE
                       </span>
                       <span className="font-mono text-[10px] uppercase text-ink-muted">
                         {cap.domain}
@@ -129,9 +129,9 @@ export function ArchitectureBento({ onOpenProject }: ArchitectureBentoProps) {
 
                   <div className="border-t border-hairline pt-3.5 space-y-2">
                     <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted">
-                      PROVEN BY REPOSITORIES:
+                      USED IN REPOSITORIES:
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-2">
                       {cap.provenByProjectIds.map((pid) => {
                         const proj = projectMap.get(pid);
                         if (!proj) return null;
@@ -141,10 +141,10 @@ export function ArchitectureBento({ onOpenProject }: ArchitectureBentoProps) {
                             type="button"
                             onClick={() => onOpenProject(proj)}
                             data-cursor-label="OPEN CASE ↗"
-                            className="inline-flex items-center gap-1 rounded-full border border-hairline bg-canvas px-2.5 py-1 font-mono text-[10px] font-medium text-ink hover:border-signal hover:text-signal transition-colors cursor-pointer"
+                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3.5 py-2 font-mono text-[11px] font-medium text-ink hover:border-signal hover:text-signal transition-colors cursor-pointer"
                           >
                             <span>{proj.title}</span>
-                            <ArrowUpRight className="h-2.5 w-2.5" />
+                            <ArrowUpRight className="h-3 w-3 shrink-0" />
                           </button>
                         );
                       })}
@@ -156,16 +156,20 @@ export function ArchitectureBento({ onOpenProject }: ArchitectureBentoProps) {
           </AnimatePresence>
         </motion.div>
 
-        {/* 4 Core Architectural Principles */}
+        {/* 4 Core Engineering Principles */}
         <div className="space-y-6 pt-4">
           <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-ink-muted">
             <Compass className="h-4 w-4 text-signal" />
-            <span>ARCHITECTURAL DOCTRINE &amp; SYSTEM DESIGN PRINCIPLES</span>
+            <span>HOW I BUILD &amp; SHIP SOFTWARE</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {ENGINEERING_PRINCIPLES.map((p) => (
-              <SpotlightCard key={p.number} showFiducials className="p-6 flex flex-col justify-between space-y-4">
+              <SpotlightCard
+                key={p.number}
+                showFiducials
+                className="p-6 flex flex-col justify-between space-y-4"
+              >
                 <div className="space-y-2.5">
                   <span className="font-mono text-xs font-bold text-signal">
                     {p.number}

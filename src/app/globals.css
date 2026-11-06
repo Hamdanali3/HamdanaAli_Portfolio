@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Raw palette values for progressive fallback + light-dark() composition */
+  /* Raw palette values calibrated for strict WCAG AA (>= 4.5:1) contrast on all surfaces */
   --bg-canvas-light: #f6f4ef;
   --bg-canvas-dark: #08090b;
 
@@ -11,32 +11,34 @@
   --bg-surface-2-light: #e5e1d6;
   --bg-surface-2-dark: #161920;
 
-  --bg-elevated-light: rgba(255, 253, 248, 0.84);
-  --bg-elevated-dark: rgba(16, 18, 22, 0.82);
+  --bg-elevated-light: rgba(255, 253, 248, 0.88);
+  --bg-elevated-dark: rgba(16, 18, 22, 0.86);
 
-  --border-hairline-light: rgba(17, 19, 23, 0.11);
-  --border-hairline-dark: rgba(255, 255, 255, 0.085);
+  --border-hairline-light: rgba(17, 19, 23, 0.13);
+  --border-hairline-dark: rgba(255, 255, 255, 0.1);
 
-  --border-strong-light: rgba(17, 19, 23, 0.22);
-  --border-strong-dark: rgba(255, 255, 255, 0.18);
+  --border-strong-light: rgba(17, 19, 23, 0.28);
+  --border-strong-dark: rgba(255, 255, 255, 0.22);
 
   --text-primary-light: #111317;
   --text-primary-dark: #f3f2ee;
 
-  --text-secondary-light: #474e5d;
-  --text-secondary-dark: #9ca3af;
+  --text-secondary-light: #353b48;
+  --text-secondary-dark: #c0c6d4;
 
-  --text-muted-light: #6d7484;
-  --text-muted-dark: #68707e;
+  --text-muted-light: #484f5e;
+  --text-muted-dark: #9da4b4;
 
-  --accent-signal-light: #d9380b;
-  --accent-signal-dark: #ff4f1f;
+  /* Single primary Signal Vermilion accent: text-safe + solid-fill-safe */
+  --accent-signal-light: #b82b04;
+  --accent-signal-dark: #ff693d;
+  --accent-signal-fill: #c22e06;
 
-  --accent-telemetry-light: #047857;
+  --accent-telemetry-light: #046c4e;
   --accent-telemetry-dark: #10b981;
 
-  --accent-champagne-light: #785f33;
-  --accent-champagne-dark: #d8c7a8;
+  --accent-champagne-light: #695024;
+  --accent-champagne-dark: #dfcda9;
 
   --scrollbar-thumb-light: #b8b3a6;
   --scrollbar-thumb-dark: #2c313c;
@@ -94,7 +96,20 @@
     --scrollbar-track: light-dark(var(--scrollbar-track-light), var(--scrollbar-track-dark));
   }
 
-  /* MANDATORY: Viewport-wide adaptive color-scheme mapped to <meta name="color-scheme"> */
+  @media (forced-colors: active) {
+    --bg-canvas: Canvas;
+    --bg-surface-1: Canvas;
+    --bg-surface-2: Canvas;
+    --bg-elevated: Canvas;
+    --border-hairline: CanvasText;
+    --border-strong: Highlight;
+    --text-primary: CanvasText;
+    --text-secondary: CanvasText;
+    --text-muted: GrayText;
+    --accent-signal: Highlight;
+    --accent-signal-fill: Highlight;
+  }
+
   color-scheme: light dark;
   accent-color: var(--accent-signal);
   scrollbar-width: thin;
@@ -134,11 +149,13 @@
   --color-ink-secondary: var(--text-secondary);
   --color-ink-muted: var(--text-muted);
   --color-signal: var(--accent-signal);
+  --color-signal-fill: var(--accent-signal-fill);
   --color-telemetry: var(--accent-telemetry);
   --color-champagne: var(--accent-champagne);
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-instrument), Georgia, serif;
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+  --font-urdu: var(--font-noto-urdu), "Noto Nastaliq Urdu", serif;
 }
 
 html {
@@ -159,8 +176,28 @@ body {
 }
 
 ::selection {
-  background-color: var(--accent-signal);
+  background-color: var(--accent-signal-fill);
   color: #ffffff;
+}
+
+/* Generous vertical leading for Noto Nastaliq Urdu ascenders & descenders */
+.urdu-nastaliq {
+  font-family: var(--font-urdu);
+  line-height: 2.15;
+  letter-spacing: 0;
+}
+
+/* Zero-CLS, zero-FOUC first-load multilingual greeting state coordination */
+html[data-greeting="active"] .hero-settled-copy {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+html:not([data-greeting="active"]) .hero-greeting-stage {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Tabular precision numbers for telemetry, metrics & clocks */
@@ -168,7 +205,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Focus-visible accessibility ring */
+/* Visible WCAG AA focus ring */
 :focus-visible {
   outline: 2px solid var(--accent-signal);
   outline-offset: 3px;
@@ -177,15 +214,7 @@ body {
 /* Subtle tactile architectural grain overlay */
 .film-grain {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  opacity: 0.028;
-}
-
-/* Architectural Swiss grid backdrop */
-.architectural-grid {
-  background-size: 64px 64px;
-  background-image:
-    linear-gradient(to right, var(--border-hairline) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--border-hairline) 1px, transparent 1px);
+  opacity: 0.025;
 }
 
 /* Native CSS Scroll-Driven Progress Indicator */
@@ -208,12 +237,12 @@ body {
   }
 }
 
-/* Top-Layer <dialog> Discrete Entry & Exit Choreography */
+/* Top-Layer <dialog> Discrete Entry & Exit Choreography (<= 280ms) */
 dialog.portfolio-dialog {
   opacity: 0;
-  transform: translateY(14px) scale(0.975);
+  transform: translateY(10px) scale(0.985);
   transition-property: opacity, transform, display, overlay;
-  transition-duration: 0.28s;
+  transition-duration: 0.26s;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   transition-behavior: allow-discrete;
 }
@@ -222,7 +251,7 @@ dialog.portfolio-dialog::backdrop {
   background-color: rgba(5, 6, 8, 0);
   backdrop-filter: blur(0px);
   transition-property: background-color, backdrop-filter, display, overlay;
-  transition-duration: 0.28s;
+  transition-duration: 0.26s;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   transition-behavior: allow-discrete;
 }
@@ -233,11 +262,11 @@ dialog.portfolio-dialog::backdrop {
 
   @starting-style {
     opacity: 0;
-    transform: translateY(14px) scale(0.975);
+    transform: translateY(10px) scale(0.985);
   }
 
   &::backdrop {
-    background-color: rgba(5, 6, 8, 0.72);
+    background-color: rgba(5, 6, 8, 0.78);
     backdrop-filter: blur(8px);
 
     @starting-style {

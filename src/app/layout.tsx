@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import {
+  Plus_Jakarta_Sans,
+  Instrument_Serif,
+  JetBrains_Mono,
+  Noto_Nastaliq_Urdu,
+} from "next/font/google";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -24,47 +29,77 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
+const notoNastaliqUrdu = Noto_Nastaliq_Urdu({
+  variable: "--font-noto-urdu",
+  subsets: ["arabic"],
+  display: "swap",
+  weight: ["400", "700"],
+});
+
+const SITE_URL = "https://hamdana-ali-portfolio.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Hamdan Ali — Software Engineer, Systems Architect & ML Security Researcher",
+  metadataBase: new URL(SITE_URL),
+  title: "Hamdan Ali — Full-Stack Developer · AI-Powered Products",
   description:
-    "Portfolio of Hamdan Ali — Full-Stack Software Engineer, Mobile Architect, and Applied ML Security Researcher building mission-critical telemetry systems (Sentinel Chitral, GridPulse), accredited higher-ed platforms (UniSelection v2.0), and IEEE intrusion-detection frameworks (PP-PSFE).",
+    "Portfolio of Hamdan Ali — Full-Stack Developer building AI-powered web applications, Flutter mobile apps, and reliable backend APIs (Sentinel Chitral, GridPulse, UniSelection v2.0). BS Software Engineering at Air University Islamabad.",
   keywords: [
     "Hamdan Ali",
+    "Full-Stack Developer",
+    "AI-Powered Products",
     "Software Engineer",
-    "Full Stack Developer",
-    "Next.js",
-    "Laravel",
-    "Flutter",
-    "Machine Learning Security",
+    "Next.js Developer",
+    "TypeScript",
+    "Laravel 12",
+    "Flutter Developer",
     "Sentinel Chitral",
     "GridPulse",
-    "Edge-IIoTset",
-    "PP-PSFE",
+    "UniSelection",
     "Air University Islamabad",
+    "Pakistan Software Developer",
   ],
   authors: [{ name: "Hamdan Ali", url: "https://github.com/Hamdanali3" }],
+  creator: "Hamdan Ali",
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
-    title: "Hamdan Ali — Full-Stack Systems Architect & ML Researcher",
+    title: "Hamdan Ali — Full-Stack Developer · AI-Powered Products",
     description:
-      "Engineering mission-critical regional telemetry, scalable full-stack platforms, and leakage-sanitized cybersecurity ML systems.",
+      "Full-Stack Developer building AI-powered web platforms, Flutter mobile apps, and resilient cloud APIs — from Chitral hazard alerts to university admissions software.",
+    url: SITE_URL,
+    siteName: "Hamdan Ali Portfolio",
     type: "website",
     locale: "en_US",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Hamdan Ali — Full-Stack Developer · AI-Powered Products",
+    description:
+      "Full-Stack Developer building AI-powered web platforms, Flutter mobile apps, and resilient cloud APIs.",
+  },
 };
 
-const themeInitScript = `try{var s=localStorage.getItem("color-scheme");if(s==="light"||s==="dark"){var m=document.querySelector('meta[name="color-scheme"]');if(m)m.content=s;}}catch(e){}`;
+const initHeadScript = `try{var s=localStorage.getItem("color-scheme");if(s==="light"||s==="dark"){var m=document.querySelector('meta[name="color-scheme"]');if(m)m.content=s;}if(!window.matchMedia("(prefers-reduced-motion: reduce)").matches&&sessionStorage.getItem("ha_greeting_seen_v2")!=="1"){document.documentElement.dataset.greeting="active";}}catch(e){}`;
 
 const personJsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "Hamdan Ali",
-  url: "https://github.com/Hamdanali3",
+  alternateName: "ہمدان علی",
+  url: SITE_URL,
   email: "mailto:Hamdanaly651@gmail.com",
-  jobTitle: "Software Engineer & Applied ML Security Researcher",
+  jobTitle: "Full-Stack Developer",
+  description: "Full-Stack Developer building AI-powered web and mobile products.",
+  alumniOf: {
+    "@type": "Organization",
+    name: "HindukushSoft Technologies",
+  },
   affiliation: {
     "@type": "CollegeOrUniversity",
     name: "Air University, Islamabad",
   },
+  knowsLanguage: ["ur", "en"],
   sameAs: ["https://github.com/Hamdanali3"],
 };
 
@@ -73,20 +108,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${plusJakarta.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${plusJakarta.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${notoNastaliqUrdu.variable} h-full antialiased`}
     >
       <head>
         <meta name="color-scheme" content="light dark" />
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: initHeadScript }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col relative selection:bg-signal selection:text-white">
+      <body className="min-h-full flex flex-col relative selection:bg-signal-fill selection:text-white">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2 focus:rounded-full focus:bg-signal focus:text-white focus:font-mono focus:text-xs"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-4 focus:py-2.5 focus:rounded-full focus:bg-signal-fill focus:text-white focus:font-mono focus:text-xs"
         >
           Skip to main content
         </a>
