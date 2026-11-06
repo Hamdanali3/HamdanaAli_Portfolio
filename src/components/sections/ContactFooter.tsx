@@ -62,8 +62,9 @@ export function ContactFooter() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Left 6 Columns: CTA & Direct Channels */}
           <div className="lg:col-span-6 space-y-6">
-            <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-signal">
-              INDEX // 06 — GET IN TOUCH
+            <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+              <span>CHAPTER 06 · INITIATE COLLABORATION</span>
             </div>
 
             <h2
@@ -146,17 +147,17 @@ export function ContactFooter() {
               <form onSubmit={handleDispatch} className="space-y-5">
                 <div className="border-b border-hairline pb-3.5 flex items-center justify-between gap-2">
                   <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
-                    MESSAGE COMPOSER
+                    ✦ DIRECT DISPATCH PROTOCOL
                   </span>
                   <span className="font-mono text-[10px] text-ink-muted">
-                    NO TRACKERS · DIRECT MAILTO
+                    ENCRYPTED MAILTO · ZERO TRACKERS
                   </span>
                 </div>
 
                 {/* Scope Selector */}
                 <fieldset className="space-y-2">
-                  <legend className="block font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted">
-                    01 // TOPIC
+                  <legend className="block font-mono text-[11px] uppercase tracking-[0.12em] text-signal font-semibold">
+                    ✦ STEP 01 · CHOOSE ENGAGEMENT FOCUS
                   </legend>
                   <div className="flex flex-wrap gap-1.5 pt-1">
                     {INQUIRY_TOPICS.map((item) => (
@@ -182,9 +183,9 @@ export function ContactFooter() {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="sender-name"
-                    className="block font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted"
+                    className="block font-mono text-[11px] uppercase tracking-[0.12em] text-signal font-semibold"
                   >
-                    02 // YOUR NAME OR TEAM
+                    ✦ STEP 02 · YOUR IDENTITY &amp; CONTACT
                   </label>
                   <input
                     id="sender-name"
@@ -202,9 +203,9 @@ export function ContactFooter() {
                 <div className="space-y-1.5">
                   <label
                     htmlFor="inquiry-brief"
-                    className="block font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted"
+                    className="block font-mono text-[11px] uppercase tracking-[0.12em] text-signal font-semibold"
                   >
-                    03 // PROJECT OR ROLE DETAILS
+                    ✦ STEP 03 · PROJECT SCOPE OR INQUIRY
                   </label>
                   <textarea
                     id="inquiry-brief"
@@ -251,28 +252,146 @@ export function ContactFooter() {
           </div>
         </div>
 
-        {/* Colophon Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-hairline pt-8 font-mono text-[11px] text-ink-muted">
-          <div className="space-y-1">
-            <div className="text-ink font-semibold">
-              © 2026 HAMDAN ALI · FULL-STACK DEVELOPER · AI-POWERED PRODUCTS
+        {/* Comprehensive Architectural World-Class Footer */}
+        <div className="border-t border-hairline pt-16 mt-20">
+          {/* Top Multi-Column Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-14 border-b border-hairline">
+            {/* Col 1 (5 cols): Identity & Bio */}
+            <div className="lg:col-span-5 space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-hairline bg-surface-2 font-mono text-base font-bold text-ink">
+                  HA
+                </span>
+                <div>
+                  <div className="name-kinetic-continuous text-xl font-bold tracking-tight text-ink">
+                    {PROFILE.name}
+                  </div>
+                  <p className="text-xs font-mono text-ink-muted">
+                    Full-Stack Developer · AI-Powered Products
+                  </p>
+                </div>
+              </div>
+
+              <p className="max-w-sm text-xs leading-relaxed text-ink-secondary">
+                Crafting resilient web applications, AI-integrated workflows, and responsive cross-platform software. BS Software Engineering at Air University Islamabad.
+              </p>
+
+              {/* Live Status Beacon */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-3 py-1 font-mono text-xs text-emerald-400">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Available for Full-Time Roles &amp; AI Builds</span>
+              </div>
+
+              {/* Local Clocks */}
+              <div className="flex items-center gap-3 pt-1 font-mono text-[11px] text-ink-muted">
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-surface-2 px-2.5 py-1 text-ink-secondary">
+                  <span className="text-signal">📍</span> Islamabad · UTC+5
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-surface-2 px-2.5 py-1 text-ink-secondary">
+                  <span>🏔️</span> Chitral · UTC+5
+                </span>
+              </div>
             </div>
-            <div>
-              BUILT WITH NEXT.JS, TYPESCRIPT, TAILWIND V4 &amp; MOTION ·{" "}
-              {PROFILE.primaryCoordinates}
+
+            {/* Col 2 (2 cols): Chapters Sitemap */}
+            <div className="lg:col-span-2 space-y-3">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-ink">
+                Chapters
+              </div>
+              <ul className="space-y-2 text-xs font-mono text-ink-secondary">
+                <li><a href="#overview" className="hover:text-signal transition-colors">01 · Overview</a></li>
+                <li><a href="#work" className="hover:text-signal transition-colors">02 · Works</a></li>
+                <li><a href="#field-notes" className="hover:text-signal transition-colors">03 · Field Notes</a></li>
+                <li><a href="#architecture" className="hover:text-signal transition-colors">04 · Stack</a></li>
+                <li><a href="#journey" className="hover:text-signal transition-colors">05 · Journey</a></li>
+                <li><a href="#contact" className="hover:text-signal transition-colors">06 · Connect</a></li>
+              </ul>
+            </div>
+
+            {/* Col 3 (3 cols): Featured Deployments */}
+            <div className="lg:col-span-3 space-y-3">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-ink">
+                Shipped Deployments
+              </div>
+              <ul className="space-y-2 text-xs font-mono text-ink-secondary">
+                <li>
+                  <a href="https://sentinelchitral-app.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-signal transition-colors flex items-center justify-between">
+                    <span>SentinelChitral</span>
+                    <span className="text-[10px] text-ink-muted">AI Hazard Alerts ↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://grid-pulse-ruby.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-signal transition-colors flex items-center justify-between">
+                    <span>GridPulse</span>
+                    <span className="text-[10px] text-ink-muted">Energy Analytics ↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://github.com/Hamdanali3/ML_IoT_Security" target="_blank" rel="noopener noreferrer" className="hover:text-signal transition-colors flex items-center justify-between">
+                    <span>Edge-IIoTset Study</span>
+                    <span className="text-[10px] text-ink-muted">ML Research ↗</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#field-notes" className="hover:text-signal transition-colors flex items-center justify-between">
+                    <span>Field Notes Archive</span>
+                    <span className="text-[10px] text-ink-muted">Gallery ↗</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 4 (2 cols): Direct Channels */}
+            <div className="lg:col-span-2 space-y-3">
+              <div className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-ink">
+                Channels
+              </div>
+              <ul className="space-y-2 text-xs font-mono text-ink-secondary">
+                <li>
+                  <a href={PROFILE.github} target="_blank" rel="noopener noreferrer" className="hover:text-signal transition-colors flex items-center gap-1.5">
+                    <GitHubMark className="h-3.5 w-3.5 text-signal" />
+                    <span>GitHub</span>
+                  </a>
+                </li>
+                <li>
+                  <a href={`mailto:${PROFILE.email}`} className="hover:text-signal transition-colors flex items-center gap-1.5">
+                    <Mail className="h-3.5 w-3.5 text-signal" />
+                    <span>Direct Mail</span>
+                  </a>
+                </li>
+                <li>
+                  <span className="text-ink-muted text-[11px] block pt-2">
+                    Air University, E-9 Islamabad
+                  </span>
+                </li>
+              </ul>
             </div>
           </div>
 
-          <Magnetic strength={0.2}>
-            <a
-              href="#overview"
-              aria-label="Top — scroll back to overview"
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-hairline bg-surface-1 px-4 py-2 text-ink-secondary transition-colors duration-200 hover:border-signal hover:text-ink"
-            >
-              <span>TOP</span>
-              <ArrowUp className="h-3.5 w-3.5 text-signal" />
-            </a>
-          </Magnetic>
+          {/* Bottom Sub-Colophon */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-8 font-mono text-[11px] text-ink-muted">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-ink font-medium">© 2026 Hamdan Ali</span>
+              <span>·</span>
+              <span>Engineered with intentional restraint, performance &amp; living motion</span>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className="hidden sm:inline text-[10px] text-ink-muted">
+                Ctrl + K / ⌘K Command Menu
+              </span>
+              <Magnetic strength={0.2}>
+                <a
+                  href="#overview"
+                  aria-label="Back to top"
+                  className="inline-flex min-h-9 items-center gap-2 rounded-full border border-hairline bg-surface-1 px-4 py-1.5 text-ink-secondary transition-colors duration-200 hover:border-signal hover:text-ink cursor-pointer"
+                >
+                  <span>BACK TO TOP</span>
+                  <ArrowUp className="h-3.5 w-3.5 text-signal" />
+                </a>
+              </Magnetic>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

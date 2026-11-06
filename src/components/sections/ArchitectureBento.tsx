@@ -48,8 +48,9 @@ export function ArchitectureBento({ onOpenProject }: ArchitectureBentoProps) {
         {/* Header + Filter Pills */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-hairline pb-8">
           <div className="space-y-3">
-            <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-signal">
-              INDEX // 04 — PROOF-BACKED STACK
+            <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+              <span>CHAPTER 04 · PROOF-BACKED STACK &amp; DOMAINS</span>
             </div>
             <h2
               id="architecture-heading"

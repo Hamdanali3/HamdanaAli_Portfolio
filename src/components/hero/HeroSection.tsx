@@ -152,16 +152,17 @@ export function HeroSection({
       <div className="relative z-10 mx-auto max-w-[1340px] px-4 sm:px-8">
         {/* Top Metadata Strip */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline pb-4 mb-8 sm:mb-12 font-mono text-[11px] tracking-[0.13em] uppercase text-ink-muted">
-          <div className="flex items-center gap-2.5">
-            <span className="inline-block h-2 w-2 rounded-full bg-signal" />
-            <span className="text-ink font-medium">INDEX // 01 — OVERVIEW</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+            <span>CHAPTER 01 · SYSTEM OVERVIEW &amp; PHILOSOPHY</span>
           </div>
-          <div className="hidden md:flex items-center gap-6">
-            <span>{PROFILE.primaryCoordinates}</span>
-            <span aria-hidden="true" className="text-hairline">
-              |
+          <div className="hidden md:flex items-center gap-3 font-mono text-[11px] text-ink-muted">
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-surface-2/60 px-2.5 py-1 text-ink-secondary">
+              <span className="text-signal">📍</span> {PROFILE.primaryCoordinates}
             </span>
-            <span>{PROFILE.secondaryCoordinates}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-hairline bg-surface-2/60 px-2.5 py-1 text-ink-secondary">
+              <span>🏔️</span> {PROFILE.secondaryCoordinates}
+            </span>
           </div>
           <div className="text-telemetry font-medium">AVAILABLE FOR FULL-STACK ROLES</div>
         </div>
@@ -253,7 +254,7 @@ export function HeroSection({
                 <span
                   lang="ur"
                   dir="rtl"
-                  className="urdu-nastaliq rounded-full border border-hairline bg-surface-1/70 px-3.5 py-0.5 text-sm font-bold text-ink-secondary"
+                  className="urdu-nastaliq urdu-kinetic-continuous rounded-full border border-signal/30 bg-surface-1/90 px-4 py-1 text-sm font-bold text-ink shadow-[0_0_16px_rgba(224,86,36,0.18)]"
                 >
                   ہمدان علی
                 </span>
@@ -277,7 +278,7 @@ export function HeroSection({
             </h1>
 
             <p className="max-w-[60ch] text-base sm:text-lg leading-[1.68] text-ink-secondary">
-              I&apos;m <strong className="font-semibold text-ink">Hamdan Ali</strong>, a BS
+              I&apos;m <strong className="font-semibold text-ink"><span className="name-kinetic-continuous">Hamdan Ali</span></strong>, a BS
               Software Engineering student at Air University Islamabad and HindukushSoft alumnus.
               I build <strong className="font-semibold text-ink">AI-powered</strong> web apps,
               Flutter mobile tools, and clean REST APIs — from mountain hazard alerts in Chitral
@@ -336,42 +337,47 @@ export function HeroSection({
           {/* Right 5 Columns: Large Editorial Portrait + Clean Profile Card */}
           <div className="lg:col-span-5">
             <SpotlightCard enableTilt showFiducials className="p-4 sm:p-5 backdrop-blur-md">
-              {/* Large, well-cropped Hero Photo filling the card canvas */}
-              <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-hairline bg-surface-2">
+              {/* Clean, unobstructed Hero Photo frame — zero text covering face, hands or clothing */}
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-hairline bg-surface-2 shadow-inner">
                 <Image
                   src={hamdanPortrait}
                   alt="Portrait of Hamdan Ali, Full-Stack Developer"
                   priority
                   placeholder="blur"
                   sizes="(max-width: 640px) 92vw, (max-width: 1024px) 520px, 460px"
-                  className="h-full w-full object-cover object-top"
+                  className="h-full w-full object-cover object-[center_20%] transition-transform duration-500 hover:scale-[1.02]"
                 />
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent p-4 sm:p-5">
-                  <div className="flex items-end justify-between gap-3">
-                    <div>
-                      <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#ff8b66]">
-                        DEVELOPER PROFILE
-                      </div>
-                      <div className="text-lg sm:text-xl font-bold tracking-tight text-white">
-                        {PROFILE.name}
-                      </div>
-                      <div className="font-mono text-xs text-white/80">
-                        {PROFILE.githubHandle}
-                      </div>
-                    </div>
+                {/* Clean status chip in top corner */}
+                <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-1 font-mono text-[10px] font-semibold text-white backdrop-blur-md shadow-md">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>ACTIVE BUILDER</span>
+                </div>
+              </div>
 
-                    <a
-                      href={PROFILE.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Hamdan Ali GitHub profile"
-                      data-cursor-label="GITHUB ↗"
-                      className="pointer-events-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/25 bg-black/55 text-white backdrop-blur-md transition-colors duration-200 hover:border-[#ff8b66] hover:text-[#ff8b66]"
-                    >
-                      <GitHubMark className="h-4 w-4" />
-                    </a>
+              {/* Dedicated High-Contrast Identity Dock Below Photo */}
+              <div className="mt-3.5 flex items-center justify-between gap-3 rounded-xl border border-hairline bg-surface-2/90 p-3.5 backdrop-blur-sm">
+                <div>
+                  <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-signal">
+                    Full-Stack Developer · AI
+                  </div>
+                  <div className="text-xl font-bold tracking-tight text-ink mt-0.5">
+                    <span className="name-kinetic-continuous">{PROFILE.name}</span>
+                  </div>
+                  <div className="font-mono text-xs text-ink-secondary mt-0.5">
+                    {PROFILE.githubHandle} · Air University Alum
                   </div>
                 </div>
+
+                <a
+                  href={PROFILE.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Hamdan Ali GitHub profile"
+                  data-cursor-label="GITHUB ↗"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-hairline bg-surface-1 text-ink shadow-sm transition-colors duration-200 hover:border-signal hover:text-signal"
+                >
+                  <GitHubMark className="h-4 w-4" />
+                </a>
               </div>
 
               {/* Concise Factual Profile Rows */}

@@ -301,3 +301,70 @@ dialog.portfolio-dialog::backdrop {
 .vt-fit-title {
   width: fit-content;
 }
+
+
+/* Continuous Living Kinetic Motion System */
+@keyframes continuous-name-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes continuous-name-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+
+@keyframes continuous-urdu-ink {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 0 6px rgba(224, 86, 36, 0.35));
+  }
+  50% {
+    transform: scale(1.025) translateY(-2px);
+    filter: drop-shadow(0 0 16px rgba(224, 86, 36, 0.75));
+  }
+}
+
+.name-kinetic-continuous {
+  display: inline-block;
+  background: linear-gradient(
+    115deg,
+    var(--text-primary) 0%,
+    var(--accent-signal) 30%,
+    var(--text-primary) 55%,
+    #ff9f7a 80%,
+    var(--text-primary) 100%
+  );
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: continuous-name-shimmer 6s ease-in-out infinite, continuous-name-float 5s ease-in-out infinite;
+  will-change: background-position, transform;
+}
+
+.urdu-kinetic-continuous {
+  display: inline-block;
+  animation: continuous-urdu-ink 4.5s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .name-kinetic-continuous,
+  .urdu-kinetic-continuous {
+    animation: none !important;
+    -webkit-text-fill-color: currentColor;
+    transform: none !important;
+    filter: none !important;
+  }
+}

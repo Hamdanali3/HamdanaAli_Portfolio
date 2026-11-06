@@ -190,8 +190,9 @@ export function FieldNotesGallery({
         {/* Section Editorial Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8">
           <div className="space-y-3">
-            <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-signal">
-              INDEX // 03 — FIELD NOTES &amp; GALLERY
+            <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+              <span>CHAPTER 03 · FIELD NOTES &amp; GALLERY ARCHIVE</span>
             </div>
             <h2
               id="field-notes-heading"

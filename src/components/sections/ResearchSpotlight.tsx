@@ -30,8 +30,9 @@ export function ResearchSpotlight() {
         {/* Section Editorial Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-hairline pb-8">
           <div className="space-y-3 max-w-3xl">
-            <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-champagne">
-              INDEX // 03 — {IEEE_RESEARCH.manuscriptTag}
+            <div className="inline-flex items-center gap-2 rounded-full border border-champagne/25 bg-champagne/10 px-3.5 py-1 text-xs font-mono font-medium text-champagne shadow-sm backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-champagne animate-pulse" />
+              <span>RESEARCH ARCHIVE · {IEEE_RESEARCH.manuscriptTag}</span>
             </div>
             <h2
               id="research-heading"

@@ -32,8 +32,9 @@ export function WorkShowcase({
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-14">
           <div className="space-y-3">
-            <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-signal">
-              INDEX // 02 — SELECTED WORK (2025–2026)
+            <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
+              <span>CHAPTER 02 · SHIPPED PRODUCTS &amp; ARCHITECTURES</span>
             </div>
             <h2
               id="work-heading"

@@ -112,7 +112,7 @@ export function NavbarDock({
                 {PROFILE.monogram}
               </span>
               <div className="flex flex-col">
-                <span className="text-sm font-bold tracking-[-0.02em] text-ink leading-none">
+                <span className="name-kinetic-continuous text-sm font-bold tracking-[-0.02em] text-ink leading-none">
                   HAMDAN ALI
                 </span>
                 <span className="mt-1 font-mono text-[10px] tracking-[0.12em] uppercase text-ink-muted leading-none">
