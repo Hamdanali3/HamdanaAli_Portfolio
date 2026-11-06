@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -9,7 +9,8 @@ import {
   Check,
   Code2,
   Copy,
-  SkipForward,
+  Languages,
+  Sparkles,
   Terminal,
 } from "lucide-react";
 import hamdanPortrait from "../../../public/images/hamdan.jpg";
@@ -21,70 +22,108 @@ import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { HERO_TELEMETRY, PROFILE } from "@/data/portfolio";
 import { cn } from "@/lib/utils";
 
-const GREETING_STORAGE_KEY = "ha_greeting_seen_v2";
-
-interface GreetingStep {
+interface MultilingualIdentity {
   id: string;
   text: string;
-  lang: "ur" | "en";
-  dir: "rtl" | "ltr";
-  caption: string;
+  lang: string;
+  dir: "ltr" | "rtl";
+  languageName: string;
+  flag: string;
+  phonetic?: string;
 }
 
-const GREETING_STEPS: readonly GreetingStep[] = [
+const MULTILINGUAL_IDENTITIES: readonly MultilingualIdentity[] = [
   {
-    id: "ur-name",
-    text: "ہمدان علی",
-    lang: "ur",
-    dir: "rtl",
-    caption: "01 / 03 · اردو",
-  },
-  {
-    id: "ur-intro",
-    text: "میں ہمدان علی ہوں",
-    lang: "ur",
-    dir: "rtl",
-    caption: "02 / 03 · پاکستان",
-  },
-  {
-    id: "en-intro",
+    id: "en",
     text: "I am Hamdan Ali",
     lang: "en",
     dir: "ltr",
-    caption: "03 / 03 · ENGLISH",
+    languageName: "English",
+    flag: "🇬🇧",
+    phonetic: "Full-Stack & AI Builder",
+  },
+  {
+    id: "ur",
+    text: "میں ہمدان علی ہوں",
+    lang: "ur",
+    dir: "rtl",
+    languageName: "اردو (Urdu)",
+    flag: "🇵🇰",
+    phonetic: "Main Hamdan Ali hoon",
+  },
+  {
+    id: "khw",
+    text: "آوا ہمدان علی رومان",
+    lang: "khw",
+    dir: "rtl",
+    languageName: "کھوار (Khowar · Chitral)",
+    flag: "🏔️",
+    phonetic: "Awa Hamdan Ali roman",
+  },
+  {
+    id: "ar",
+    text: "أنا حمدان علي",
+    lang: "ar",
+    dir: "rtl",
+    languageName: "العربية (Arabic)",
+    flag: "🇸🇦",
+    phonetic: "Ana Hamdan Ali",
+  },
+  {
+    id: "es",
+    text: "Soy Hamdan Ali",
+    lang: "es",
+    dir: "ltr",
+    languageName: "Español (Spanish)",
+    flag: "🇪🇸",
+    phonetic: "Soy Hamdan Ali",
+  },
+  {
+    id: "ja",
+    text: "私はハムダン・アリです",
+    lang: "ja",
+    dir: "ltr",
+    languageName: "日本語 (Japanese)",
+    flag: "🇯🇵",
+    phonetic: "Watashi wa Hamudan Ali desu",
+  },
+  {
+    id: "fr",
+    text: "Je suis Hamdan Ali",
+    lang: "fr",
+    dir: "ltr",
+    languageName: "Français (French)",
+    flag: "🇫🇷",
+    phonetic: "Je suis Hamdan Ali",
+  },
+  {
+    id: "de",
+    text: "Ich bin Hamdan Ali",
+    lang: "de",
+    dir: "ltr",
+    languageName: "Deutsch (German)",
+    flag: "🇩🇪",
+    phonetic: "Ich bin Hamdan Ali",
+  },
+  {
+    id: "zh",
+    text: "我是哈姆丹·阿里",
+    lang: "zh",
+    dir: "ltr",
+    languageName: "中文 (Mandarin)",
+    flag: "🇨🇳",
+    phonetic: "Wǒ shì Hāmǔdān·Ālǐ",
+  },
+  {
+    id: "tr",
+    text: "Ben Hamdan Ali",
+    lang: "tr",
+    dir: "ltr",
+    languageName: "Türkçe (Turkish)",
+    flag: "🇹🇷",
+    phonetic: "Ben Hamdan Ali",
   },
 ];
-
-const greetingListeners = new Set<() => void>();
-
-function subscribeGreeting(listener: () => void) {
-  greetingListeners.add(listener);
-  return () => {
-    greetingListeners.delete(listener);
-  };
-}
-
-function getGreetingSnapshot(): boolean {
-  if (typeof document === "undefined") return false;
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-  return document.documentElement.dataset.greeting === "active";
-}
-
-function getGreetingServerSnapshot(): boolean {
-  return false;
-}
-
-function dismissGreetingSession() {
-  if (typeof document !== "undefined") {
-    delete document.documentElement.dataset.greeting;
-  }
-  try {
-    sessionStorage.setItem(GREETING_STORAGE_KEY, "1");
-  } catch {
-    // Proceed cleanly when sessionStorage is unavailable
-  }
-  greetingListeners.forEach((listener) => listener());
-}
 
 interface HeroSectionProps {
   onOpenCommandPalette: () => void;
@@ -96,50 +135,29 @@ export function HeroSection({
   hasEventsSection = true,
 }: HeroSectionProps) {
   const [copied, setCopied] = useState(false);
-  const [stepIdx, setStepIdx] = useState(0);
+  const [langIndex, setLangIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  const greetingActive = useSyncExternalStore(
-    subscribeGreeting,
-    getGreetingSnapshot,
-    getGreetingServerSnapshot
-  );
-
-  const skipGreeting = useCallback(() => {
-    dismissGreetingSession();
-  }, []);
-
+  // Continuous animation loop cycling all the time through different languages
   useEffect(() => {
-    if (!greetingActive) return;
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setLangIndex((prev) => (prev + 1) % MULTILINGUAL_IDENTITIES.length);
+    }, 2800);
+    return () => clearInterval(interval);
+  }, [isPaused]);
 
-    // Total sequence ~2.95s across 3 steps, each transition <= 280ms
-    const t1 = setTimeout(() => setStepIdx(1), 980);
-    const t2 = setTimeout(() => setStepIdx(2), 1980);
-    const t3 = setTimeout(() => {
-      dismissGreetingSession();
-    }, 2950);
+  const activeIdentity = MULTILINGUAL_IDENTITIES[langIndex] ?? MULTILINGUAL_IDENTITIES[0];
 
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        dismissGreetingSession();
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [greetingActive]);
+  const handleNextLanguage = () => {
+    setLangIndex((prev) => (prev + 1) % MULTILINGUAL_IDENTITIES.length);
+  };
 
   const handleCopyEmail = () => {
     navigator.clipboard?.writeText(PROFILE.email);
     setCopied(true);
     setTimeout(() => setCopied(false), 2200);
   };
-
-  const activeGreeting = GREETING_STEPS[stepIdx] ?? GREETING_STEPS[0];
 
   return (
     <section
@@ -171,93 +189,96 @@ export function HeroSection({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-10 items-center">
           {/* Left 7 Columns: Zero-CLS Greeting Stage + Hero Headline */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Fixed-Height Stacked Slot: Multilingual Greeting (First Load) <-> Identity Header */}
-            <div className="grid grid-cols-1 min-h-[112px] sm:min-h-[120px] items-center">
-              {/* Layer A: Urdu -> English Greeting Stage (plays once per session, skippable) */}
+            {/* Living Multilingual Identity Banner — In Animation Mode All The Time */}
+            <div className="space-y-3.5">
               <div
-                onClick={greetingActive ? skipGreeting : undefined}
-                aria-hidden={!greetingActive}
-                className={cn(
-                  "hero-greeting-stage col-start-1 row-start-1 flex items-center justify-between gap-4 rounded-2xl border border-strong bg-surface-1/95 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-md transition-opacity duration-300",
-                  greetingActive
-                    ? "opacity-100 visible cursor-pointer z-20"
-                    : "opacity-0 invisible pointer-events-none"
-                )}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+                onClick={handleNextLanguage}
+                role="region"
+                aria-label="Continuous Multilingual Name Rotation"
+                className="group relative overflow-hidden rounded-2xl border border-strong bg-surface-1/95 p-4 sm:p-5 backdrop-blur-md shadow-lg transition-all duration-300 hover:border-signal/50 cursor-pointer select-none"
               >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted mb-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-signal" />
-                    <span>{activeGreeting.caption}</span>
+                {/* Top Telemetry & Language Chip Bar */}
+                <div className="flex items-center justify-between gap-3 border-b border-hairline/70 pb-3 font-mono text-[10px] uppercase tracking-[0.14em]">
+                  <div className="flex items-center gap-2 text-signal">
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-75 motion-reduce:hidden" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
+                    </span>
+                    <span className="font-semibold">LIVING MULTILINGUAL IDENTITY</span>
                   </div>
 
-                  <div
-                    className={cn(
-                      "flex min-h-[54px] sm:min-h-[62px] items-center",
-                      activeGreeting.dir === "rtl" ? "justify-end" : "justify-start"
-                    )}
-                  >
-                    <AnimatePresence mode="wait">
-                      <motion.span
-                        key={activeGreeting.id}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                        lang={activeGreeting.lang}
-                        dir={activeGreeting.dir}
-                        className={cn(
-                          "inline-block w-fit text-ink",
-                          activeGreeting.lang === "ur"
-                            ? "urdu-nastaliq text-2xl sm:text-3xl font-bold"
-                            : "font-sans text-2xl sm:text-3xl font-extrabold tracking-[-0.03em]"
-                        )}
-                      >
-                        {activeGreeting.text}
-                      </motion.span>
-                    </AnimatePresence>
+                  <div className="flex items-center gap-2 text-ink-muted">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-2.5 py-0.5 text-ink font-medium">
+                      <span>{activeIdentity.flag}</span>
+                      <span>{activeIdentity.languageName}</span>
+                    </span>
+                    <span className="tabular-nums font-semibold text-ink-secondary">
+                      {String(langIndex + 1).padStart(2, "0")} / {String(MULTILINGUAL_IDENTITIES.length).padStart(2, "0")}
+                    </span>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  tabIndex={greetingActive ? 0 : -1}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    skipGreeting();
-                  }}
-                  className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3.5 py-2 font-mono text-[11px] font-medium text-ink-secondary hover:border-strong hover:text-ink transition-colors cursor-pointer"
+                {/* Main Continuously Animated Living Text Display */}
+                <div
+                  className={cn(
+                    "flex min-h-[60px] sm:min-h-[68px] items-center pt-2.5",
+                    activeIdentity.dir === "rtl" ? "justify-end text-right" : "justify-start text-left"
+                  )}
                 >
-                  <span>Skip</span>
-                  <SkipForward className="h-3.5 w-3.5 text-signal" />
-                  <kbd
-                    aria-hidden="true"
-                    className="hidden sm:inline rounded border border-hairline bg-surface-2 px-1.5 py-0.5 text-[10px] text-ink-muted"
-                  >
-                    Esc
-                  </kbd>
-                </button>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeIdentity.id}
+                      initial={{ opacity: 0, y: 8, filter: "blur(3px)" }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, y: -8, filter: "blur(3px)" }}
+                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                      lang={activeIdentity.lang}
+                      dir={activeIdentity.dir}
+                      className={cn(
+                        "inline-block w-fit",
+                        activeIdentity.lang === "ur" || activeIdentity.lang === "khw"
+                          ? "urdu-nastaliq text-3xl sm:text-4xl font-bold leading-[2.1] text-ink"
+                          : "font-sans text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-[-0.035em] leading-tight text-ink"
+                      )}
+                    >
+                      <span className="name-kinetic-continuous">
+                        {activeIdentity.text}
+                      </span>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Bottom Micro-Bar: Role Tag + Clickable Hint */}
+                <div className="flex items-center justify-between pt-2.5 border-t border-hairline/50 text-[10px] font-mono text-ink-muted">
+                  <div className="flex items-center gap-2 text-ink-secondary">
+                    <Sparkles className="h-3 w-3 text-signal" />
+                    <span>{activeIdentity.phonetic ?? "Continuous Living Name Animation"}</span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-ink-muted group-hover:text-signal transition-colors">
+                    <span>Click or tap to advance</span>
+                    <Languages className="h-3 w-3" />
+                  </span>
+                </div>
               </div>
 
-              {/* Layer B: Settled Identity Header */}
-              <div
-                className={cn(
-                  "hero-settled-badge col-start-1 row-start-1 flex flex-wrap items-center gap-3 transition-opacity duration-300",
-                  greetingActive ? "opacity-0 invisible pointer-events-none" : "opacity-100 visible"
-                )}
-              >
+              {/* Permanent Secondary Role & Quick Switcher Pill Row */}
+              <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2.5 rounded-full border border-hairline bg-surface-1/90 px-4 py-2 backdrop-blur-sm">
                   <Code2 className="h-3.5 w-3.5 text-signal" />
                   <span className="font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-ink">
                     {PROFILE.role}
                   </span>
                 </div>
-                <span
-                  lang="ur"
-                  dir="rtl"
-                  className="urdu-nastaliq urdu-kinetic-continuous rounded-full border border-signal/30 bg-surface-1/90 px-4 py-1 text-sm font-bold text-ink shadow-[0_0_16px_rgba(224,86,36,0.18)]"
+                <button
+                  type="button"
+                  onClick={handleNextLanguage}
+                  className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-surface-1/80 px-3.5 py-1.5 font-mono text-[10px] text-ink-secondary hover:border-signal hover:text-signal transition-colors cursor-pointer"
                 >
-                  ہمدان علی
-                </span>
+                  <Languages className="h-3.5 w-3.5 text-signal" />
+                  <span>Next Language ({langIndex + 1}/10) ↻</span>
+                </button>
               </div>
             </div>
 
@@ -363,8 +384,10 @@ export function HeroSection({
                   <div className="text-xl font-bold tracking-tight text-ink mt-0.5">
                     <span className="name-kinetic-continuous">{PROFILE.name}</span>
                   </div>
-                  <div className="font-mono text-xs text-ink-secondary mt-0.5">
-                    {PROFILE.githubHandle} · Air University Alum
+                  <div className="font-mono text-xs text-ink-secondary mt-0.5 flex items-center gap-1.5 flex-wrap">
+                    <span>{PROFILE.githubHandle}</span>
+                    <span className="text-ink-muted">·</span>
+                    <span className="text-signal font-medium">{activeIdentity.text}</span>
                   </div>
                 </div>
 
