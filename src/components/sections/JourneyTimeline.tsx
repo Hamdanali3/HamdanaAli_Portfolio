@@ -17,8 +17,8 @@ export function JourneyTimeline() {
   });
 
   const scaleY = useSpring(scrollYProgress, {
-    stiffness: 220,
-    damping: 32,
+    stiffness: 260,
+    damping: 34,
     restDelta: 0.001,
   });
 
@@ -33,34 +33,32 @@ export function JourneyTimeline() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-14">
           <div className="space-y-3">
             <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-signal">
-              INDEX // 05 — EXPERIENCE, RESEARCH &amp; ACADEMIA
+              INDEX // 05 — EXPERIENCE &amp; EDUCATION
             </div>
             <h2
               id="journey-heading"
               className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold tracking-[-0.035em] leading-[1.04] text-ink"
             >
-              <RevealText text="Trajectory of" as="span" />{" "}
+              <RevealText text="Consistent" as="span" />{" "}
               <span className="font-serif italic font-normal text-signal">
-                disciplined
+                shipping
               </span>{" "}
-              <RevealText text="execution." as="span" delay={0.08} />
+              <RevealText text="& steady growth." as="span" delay={0.05} />
             </h2>
           </div>
           <p className="max-w-md text-sm leading-relaxed text-ink-secondary">
-            From foundational software engineering at Air University Islamabad to intensive
-            industry builds at HindukushSoft Technologies and IEEE security research.
+            From undergraduate software engineering at Air University Islamabad to full-stack
+            internship builds at HindukushSoft Technologies and live regional products.
           </p>
         </div>
 
         {/* Timeline Spine + Cards */}
         <div ref={containerRef} className="relative pl-6 sm:pl-12">
-          {/* Static Hairline Track */}
           <div
             aria-hidden="true"
             className="absolute left-[9px] sm:left-[19px] top-2 bottom-2 w-[2px] bg-hairline"
           />
 
-          {/* Scroll-Linked Signal Progress Spine */}
           <motion.div
             aria-hidden="true"
             style={{ scaleY: prefersReduced ? 1 : scaleY }}
@@ -71,17 +69,16 @@ export function JourneyTimeline() {
             {JOURNEY.map((item, idx) => (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, y: 22 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{
-                  duration: 0.6,
-                  delay: idx * 0.06,
+                  duration: 0.34,
+                  delay: Math.min(0.12, idx * 0.04),
                   ease: [0.22, 1, 0.36, 1],
                 }}
                 className="relative"
               >
-                {/* Node Reticle */}
                 <span
                   aria-hidden="true"
                   className="absolute -left-[22px] sm:-left-[36px] top-6 flex h-4 w-4 items-center justify-center rounded-full border-2 border-signal bg-canvas"
@@ -92,7 +89,7 @@ export function JourneyTimeline() {
                 <SpotlightCard showFiducials className="p-6 sm:p-8">
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <div className="lg:col-span-4 space-y-2">
-                      <span className="inline-block rounded-md bg-signal/15 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-signal">
+                      <span className="inline-block rounded-md bg-signal-fill px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
                         {item.period}
                       </span>
                       <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted">
@@ -118,7 +115,7 @@ export function JourneyTimeline() {
                             target="_blank"
                             rel="noopener noreferrer"
                             data-cursor-label="OPEN ↗"
-                            className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3.5 py-1.5 font-mono text-[11px] font-medium text-ink hover:border-signal hover:text-signal transition-colors"
+                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-canvas px-4 py-2 font-mono text-[11px] font-medium text-ink hover:border-signal hover:text-signal transition-colors duration-200"
                           >
                             <span>{item.linkLabel}</span>
                             <ArrowUpRight className="h-3 w-3" />

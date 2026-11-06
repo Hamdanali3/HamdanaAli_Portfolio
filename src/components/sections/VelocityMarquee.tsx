@@ -91,29 +91,37 @@ export function VelocityMarquee() {
 
   return (
     <section
-      aria-label="Core engineering capabilities ticker"
+      aria-label="Core engineering stack ticker"
       className="relative border-b border-hairline bg-surface-1/45 py-5"
     >
-      <div className="mx-auto max-w-[1340px] px-4 sm:px-8 mb-2 flex items-center justify-between">
+      <div className="mx-auto max-w-[1340px] px-4 sm:px-8 mb-2 flex items-center justify-between gap-4">
         <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-ink-muted">
-          PRODUCTION STACK &amp; RESEARCH TELEMETRY
+          FULL-STACK &amp; AI PRODUCT TOOLKIT
         </span>
         <button
           type="button"
           onClick={() => setPaused((p) => !p)}
           aria-pressed={paused}
-          aria-label={paused ? "Resume capability ticker" : "Pause capability ticker"}
-          className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface-1 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-muted hover:text-ink cursor-pointer"
+          aria-label={
+            paused
+              ? "Paused — resume capability ticker"
+              : "Live — pause capability ticker"
+          }
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-surface-1 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-muted hover:text-ink transition-colors cursor-pointer"
         >
-          {paused ? <Play className="h-2.5 w-2.5 text-signal" /> : <Pause className="h-2.5 w-2.5 text-signal" />}
+          {paused ? (
+            <Play className="h-3 w-3 text-signal" />
+          ) : (
+            <Pause className="h-3 w-3 text-signal" />
+          )}
           <span>{paused ? "Paused" : "Live"}</span>
         </button>
       </div>
 
-      <MarqueeTrack items={MARQUEE_CAPABILITIES} baseVelocity={-2.4} paused={paused} />
+      <MarqueeTrack items={MARQUEE_CAPABILITIES} baseVelocity={-2.2} paused={paused} />
       <MarqueeTrack
         items={[...MARQUEE_CAPABILITIES].reverse()}
-        baseVelocity={2.1}
+        baseVelocity={1.9}
         paused={paused}
       />
     </section>

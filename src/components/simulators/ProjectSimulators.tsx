@@ -44,7 +44,7 @@ function SentinelSimulator() {
     setTimeout(() => {
       setBroadcasting(false);
       setDeliveredCount(492);
-    }, 650);
+    }, 350);
   };
 
   return (
@@ -65,16 +65,14 @@ function SentinelSimulator() {
       </div>
 
       {/* 8 Valley Selector Grid */}
-      <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+      <div className="mt-3.5 grid grid-cols-2 sm:grid-cols-4 gap-2">
         {CHITRAL_VALLEYS.map((v, i) => {
           const isCurrent = i === selectedIdx;
           const statusDot =
-            v.risk === "Watch"
+            v.risk === "Watch" || v.risk === "503 Fail-Safe"
               ? "bg-signal"
               : v.risk === "Advisory"
-              ? "bg-amber-500"
-              : v.risk === "503 Fail-Safe"
-              ? "bg-rose-500"
+              ? "bg-champagne"
               : "bg-telemetry";
           return (
             <button
@@ -85,14 +83,14 @@ function SentinelSimulator() {
                 setDeliveredCount(null);
               }}
               className={cn(
-                "flex items-center justify-between rounded-lg border px-2.5 py-1.5 text-left text-xs transition-all cursor-pointer",
+                "flex min-h-11 items-center justify-between rounded-lg border px-2.5 py-2 text-left text-xs transition-colors duration-200 cursor-pointer",
                 isCurrent
                   ? "border-signal bg-surface-2 text-ink font-semibold"
                   : "border-hairline bg-surface-1/60 text-ink-secondary hover:text-ink"
               )}
             >
               <span className="truncate">{v.name}</span>
-              <span className={cn("h-2 w-2 shrink-0 rounded-full", statusDot)} />
+              <span aria-hidden="true" className={cn("h-2 w-2 shrink-0 rounded-full", statusDot)} />
             </button>
           );
         })}
@@ -109,14 +107,12 @@ function SentinelSimulator() {
           </div>
           <span
             className={cn(
-              "shrink-0 rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold uppercase",
-              active.risk === "Watch"
-                ? "bg-signal/15 text-signal border border-signal/30"
-                : active.risk === "503 Fail-Safe"
-                ? "bg-rose-500/15 text-rose-500 border border-rose-500/30"
+              "shrink-0 rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold uppercase border",
+              active.risk === "Watch" || active.risk === "503 Fail-Safe"
+                ? "bg-surface-2 text-signal border-strong"
                 : active.risk === "Advisory"
-                ? "bg-amber-500/15 text-amber-500 border border-amber-500/30"
-                : "bg-telemetry/15 text-telemetry border border-telemetry/30"
+                ? "bg-surface-2 text-champagne border-hairline"
+                : "bg-surface-2 text-telemetry border-hairline"
             )}
           >
             {active.risk}
@@ -127,14 +123,18 @@ function SentinelSimulator() {
         <div className="space-y-1">
           <div className="flex justify-between font-mono text-[10px] text-ink-muted tabular-nums">
             <span>RISK ENGINE CONFIDENCE</span>
-            <span>{active.confidence > 0 ? `${Math.round(active.confidence * 100)}%` : "HTTP 503 UNAVAILABLE"}</span>
+            <span>
+              {active.confidence > 0
+                ? `${Math.round(active.confidence * 100)}%`
+                : "HTTP 503 UNAVAILABLE"}
+            </span>
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
             <motion.div
               className="h-full bg-signal"
               initial={false}
               animate={{ width: `${active.confidence * 100}%` }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
             />
           </div>
         </div>
@@ -145,10 +145,10 @@ function SentinelSimulator() {
             type="button"
             onClick={triggerBroadcast}
             disabled={active.risk === "503 Fail-Safe"}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-signal px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-white disabled:opacity-40 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-signal-fill px-3.5 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-white disabled:opacity-45 cursor-pointer"
           >
-            <BellRing className="h-3 w-3" />
-            <span>{broadcasting ? "Dispatching Batch..." : "Test 500-Token FCM Alert"}</span>
+            <BellRing className="h-3.5 w-3.5" />
+            <span>{broadcasting ? "Dispatching..." : "Test 500-Token FCM Alert"}</span>
           </button>
           {deliveredCount !== null && (
             <span className="font-mono text-[10px] text-telemetry tabular-nums">
@@ -162,23 +162,24 @@ function SentinelSimulator() {
 }
 
 /* ============================================================================
- * 2. GRICPULSE — 177+ MW FLEET TELEMETRY & ALERT -> WORK ORDER STATE MACHINE
+ * 2. GRIDPULSE — 177+ MW FLEET TELEMETRY & ALERT -> WORK ORDER STATE MACHINE
  * ============================================================================ */
 type AlertStage = "open" | "acknowledged" | "work_order" | "resolved";
 
+const FLEET_STEPS = [164.8, 165.4, 166.1, 165.2, 164.3, 165.9] as const;
+
 function GridPulseSimulator() {
-  const [fleetMw, setFleetMw] = useState(164.8);
+  const [tick, setTick] = useState(0);
   const [stage, setStage] = useState<AlertStage>("open");
 
   useEffect(() => {
     const id = setInterval(() => {
-      setFleetMw((prev) => {
-        const delta = (Math.random() - 0.48) * 1.4;
-        return Number(Math.min(182, Math.max(158, prev + delta)).toFixed(1));
-      });
-    }, 2400);
+      setTick((prev) => (prev + 1) % FLEET_STEPS.length);
+    }, 3000);
     return () => clearInterval(id);
   }, []);
+
+  const fleetMw = FLEET_STEPS[tick];
 
   const advanceStage = () => {
     setStage((prev) =>
@@ -205,34 +206,35 @@ function GridPulseSimulator() {
           </span>
         </div>
         <span className="flex items-center gap-1.5 font-mono text-[10px] text-telemetry">
-          <span className="h-1.5 w-1.5 rounded-full bg-telemetry" />
+          <span className="h-1.5 w-1.5 rounded-full bg-telemetry" aria-hidden="true" />
           5s TELEMETRY
         </span>
       </div>
 
       {/* Live Fleet Output + Plant Breakdown */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="col-span-1 rounded-xl border border-hairline bg-surface-1 p-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="sm:col-span-1 rounded-xl border border-hairline bg-surface-1 p-3">
           <div className="font-mono text-[10px] uppercase text-ink-muted">LIVE OUTPUT</div>
           <div className="mt-1 font-mono text-xl sm:text-2xl font-bold text-ink tabular-nums">
-            {fleetMw} <span className="text-xs font-normal text-ink-muted">MW</span>
+            {fleetMw.toFixed(1)}{" "}
+            <span className="text-xs font-normal text-ink-muted">MW</span>
           </div>
           <div className="mt-1 font-mono text-[10px] text-telemetry tabular-nums">
             91.4% Cap. Factor
           </div>
         </div>
 
-        <div className="col-span-2 rounded-xl border border-hairline bg-surface-1 p-3 space-y-1.5 font-mono text-[11px]">
-          <div className="flex justify-between">
+        <div className="sm:col-span-2 rounded-xl border border-hairline bg-surface-1 p-3 space-y-1.5 font-mono text-[11px]">
+          <div className="flex justify-between gap-2">
             <span className="text-ink-secondary">Golen Gol Hydro</span>
             <span className="text-ink font-semibold tabular-nums">104.2 / 108 MW</span>
           </div>
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-2">
             <span className="text-ink-secondary">Lawi Hydro Station</span>
             <span className="text-ink font-semibold tabular-nums">52.6 / 69 MW</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-ink-secondary">Mastuj Solar + Shandur Wind</span>
+          <div className="flex justify-between gap-2">
+            <span className="text-ink-secondary">Mastuj Solar + Wind</span>
             <span className="text-telemetry font-semibold tabular-nums">8.0 MW Online</span>
           </div>
         </div>
@@ -240,29 +242,27 @@ function GridPulseSimulator() {
 
       {/* Closed-Loop Alert -> Kanban Work Order Interactive Lifecycle */}
       <div className="rounded-xl border border-hairline bg-surface-1 p-3.5">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            {stage === "resolved" ? (
-              <CheckCircle2 className="h-4 w-4 text-telemetry shrink-0" />
-            ) : (
-              <AlertTriangle className="h-4 w-4 text-signal shrink-0" />
-            )}
-            <span className="font-mono text-[11px] font-semibold text-ink">
-              {stage === "open" && "ALERT #A-109: Reshun Micro-Hydro Bearing 78°C"}
-              {stage === "acknowledged" && "ACK BY SHIFT ENGINEER · Evaluating Unit #2"}
-              {stage === "work_order" && "WORK ORDER #WO-412 · In Progress (Kanban)"}
-              {stage === "resolved" && "WORK DONE -> Alert #A-109 Auto-Resolved!"}
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          {stage === "resolved" ? (
+            <CheckCircle2 className="h-4 w-4 text-telemetry shrink-0" />
+          ) : (
+            <AlertTriangle className="h-4 w-4 text-signal shrink-0" />
+          )}
+          <span className="font-mono text-[11px] font-semibold text-ink">
+            {stage === "open" && "ALERT #A-109: Reshun Micro-Hydro Bearing 78°C"}
+            {stage === "acknowledged" && "ACK BY SHIFT ENGINEER · Evaluating Unit #2"}
+            {stage === "work_order" && "WORK ORDER #WO-412 · In Progress (Kanban)"}
+            {stage === "resolved" && "WORK DONE -> Alert #A-109 Auto-Resolved!"}
+          </span>
         </div>
 
-        <div className="mt-3 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1 font-mono text-[10px]">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-1 font-mono text-[10px]" aria-hidden="true">
             {(["open", "acknowledged", "work_order", "resolved"] as const).map((s) => (
               <span
                 key={s}
                 className={cn(
-                  "h-1.5 w-6 rounded-full transition-colors",
+                  "h-1.5 w-6 rounded-full transition-colors duration-200",
                   stage === s ? "bg-signal" : "bg-surface-2"
                 )}
               />
@@ -272,7 +272,7 @@ function GridPulseSimulator() {
           <button
             type="button"
             onClick={advanceStage}
-            className="rounded-lg border border-strong bg-surface-2 px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink hover:border-signal hover:text-signal transition-colors cursor-pointer"
+            className="min-h-11 rounded-lg border border-strong bg-surface-2 px-3.5 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-ink hover:border-signal hover:text-signal transition-colors duration-200 cursor-pointer"
           >
             {stage === "open" && "1. Acknowledge Alert →"}
             {stage === "acknowledged" && "2. Convert to Work Order →"}
@@ -294,14 +294,14 @@ function EdgeIIoTSimulator() {
   const bars =
     mode === "sanitized"
       ? [
-          { name: "XGBoost + PP-PSFE (Best)", val: 96.49, highlight: true, note: "3.54 ms/1k" },
+          { name: "XGBoost + PP-PSFE (Selected)", val: 96.49, highlight: true, note: "3.54 ms/1k" },
           { name: "LightGBM + PP-PSFE", val: 96.33, highlight: false, note: "18.35 ms/1k" },
           { name: "Random Forest", val: 94.38, highlight: false, note: "10.35 ms/1k" },
           { name: "Logistic Regression", val: 84.87, highlight: false, note: "Web F1: 0.44" },
         ]
       : [
           { name: "Un-audited Leaky Model", val: 99.82, highlight: false, note: "Memorizes Lab IPs!" },
-          { name: "Naive Drop (No PP-PSFE)", val: 78.4, highlight: false, note: "Web Attacks Collapse" },
+          { name: "Naive Drop (No PP-PSFE)", val: 78.4, highlight: false, note: "Web Attacks Drop" },
         ];
 
   return (
@@ -313,27 +313,33 @@ function EdgeIIoTSimulator() {
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-4 w-4 text-champagne" />
           <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink">
-            PP-PSFE // 15-CLASS INTRUSION BENCHMARK
+            PP-PSFE // 15-CLASS BENCHMARK
           </span>
         </div>
 
-        <div className="inline-flex rounded-lg border border-hairline bg-surface-1 p-0.5 font-mono text-[10px]">
+        <div className="inline-flex rounded-xl border border-hairline bg-surface-1 p-1 font-mono text-[10px] gap-1">
           <button
             type="button"
+            aria-pressed={mode === "sanitized"}
             onClick={() => setMode("sanitized")}
             className={cn(
-              "rounded-md px-2.5 py-1 transition-colors cursor-pointer",
-              mode === "sanitized" ? "bg-signal text-white font-semibold" : "text-ink-muted hover:text-ink"
+              "min-h-11 rounded-lg px-3 py-1.5 transition-colors duration-200 cursor-pointer",
+              mode === "sanitized"
+                ? "bg-signal-fill text-white font-semibold"
+                : "text-ink-muted hover:text-ink"
             )}
           >
             PP-PSFE (62 Feat)
           </button>
           <button
             type="button"
+            aria-pressed={mode === "leaky"}
             onClick={() => setMode("leaky")}
             className={cn(
-              "rounded-md px-2.5 py-1 transition-colors cursor-pointer",
-              mode === "leaky" ? "bg-signal text-white font-semibold" : "text-ink-muted hover:text-ink"
+              "min-h-11 rounded-lg px-3 py-1.5 transition-colors duration-200 cursor-pointer",
+              mode === "leaky"
+                ? "bg-signal-fill text-white font-semibold"
+                : "text-ink-muted hover:text-ink"
             )}
           >
             Why Audit Matters
@@ -344,11 +350,11 @@ function EdgeIIoTSimulator() {
       <div className="space-y-2.5">
         {bars.map((b) => (
           <div key={b.name} className="space-y-1">
-            <div className="flex items-center justify-between font-mono text-[11px] tabular-nums">
+            <div className="flex items-center justify-between font-mono text-[11px] tabular-nums gap-2">
               <span className={b.highlight ? "font-semibold text-ink" : "text-ink-secondary"}>
                 {b.name}
               </span>
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 shrink-0">
                 <span className="text-[10px] text-ink-muted">{b.note}</span>
                 <span className={b.highlight ? "text-signal font-bold" : "text-ink"}>
                   {b.val.toFixed(2)}%
@@ -359,14 +365,14 @@ function EdgeIIoTSimulator() {
               <motion.div
                 initial={false}
                 animate={{ width: `${b.val}%` }}
-                transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
                 className={cn(
                   "h-full rounded-full",
                   b.highlight
                     ? "bg-signal"
                     : mode === "leaky"
-                    ? "bg-amber-500/80"
-                    : "bg-ink-muted/60"
+                    ? "bg-champagne"
+                    : "bg-ink-muted/65"
                 )}
               />
             </div>
@@ -374,7 +380,7 @@ function EdgeIIoTSimulator() {
         ))}
       </div>
 
-      <div className="flex items-center justify-between rounded-lg border border-hairline bg-surface-1 px-3 py-2 font-mono text-[10px] text-ink-secondary">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-hairline bg-surface-1 px-3 py-2 font-mono text-[10px] text-ink-secondary">
         <span className="flex items-center gap-1.5">
           <Cpu className="h-3.5 w-3.5 text-telemetry" />
           Flask API + Angular 22 · ROC-AUC 0.9991
@@ -413,16 +419,17 @@ function UniSelectionSimulator() {
         <span className="font-mono text-[10px] text-telemetry">SHA-256 VERIFIED</span>
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-2">
         {MERIT_PROFILES.map((p, idx) => (
           <button
             key={p.label}
             type="button"
+            aria-pressed={profileIdx === idx}
             onClick={() => setProfileIdx(idx)}
             className={cn(
-              "rounded-lg border px-2.5 py-1 font-mono text-[10px] transition-colors cursor-pointer",
+              "min-h-11 rounded-lg border px-3 py-2 font-mono text-[10px] transition-colors duration-200 cursor-pointer",
               profileIdx === idx
-                ? "border-signal bg-signal text-white font-semibold"
+                ? "border-signal-fill bg-signal-fill text-white font-semibold"
                 : "border-hairline bg-surface-1 text-ink-secondary hover:text-ink"
             )}
           >
@@ -435,7 +442,8 @@ function UniSelectionSimulator() {
         <div className="rounded-xl border border-hairline bg-surface-1 p-3">
           <div className="font-mono text-[10px] text-ink-muted">ELIGIBLE INSTITUTIONS</div>
           <div className="mt-1 font-mono text-2xl font-bold text-ink tabular-nums">
-            {current.matchedUnis} <span className="text-xs font-normal text-ink-muted">/ 284</span>
+            {current.matchedUnis}{" "}
+            <span className="text-xs font-normal text-ink-muted">/ 284</span>
           </div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-secondary">
             266 HEC + 18 Global
@@ -444,7 +452,8 @@ function UniSelectionSimulator() {
         <div className="rounded-xl border border-hairline bg-surface-1 p-3">
           <div className="font-mono text-[10px] text-ink-muted">VERIFIED AID SCHEMES</div>
           <div className="mt-1 font-mono text-2xl font-bold text-telemetry tabular-nums">
-            {current.scholarships} <span className="text-xs font-normal text-ink-muted">/ 12</span>
+            {current.scholarships}{" "}
+            <span className="text-xs font-normal text-ink-muted">/ 12</span>
           </div>
           <div className="mt-0.5 font-mono text-[10px] text-ink-secondary">
             13 Gov Visa Portals
@@ -477,7 +486,7 @@ export function ProjectSimulator({ kind }: { kind: SimulatorKind }) {
       return (
         <div className="p-4 flex items-center gap-2 font-mono text-xs text-ink-muted">
           <Activity className="h-4 w-4 text-signal" />
-          <span>Interactive Telemetry Ready</span>
+          <span>Interactive Preview Ready</span>
         </div>
       );
   }

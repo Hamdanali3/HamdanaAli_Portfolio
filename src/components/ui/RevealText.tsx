@@ -17,7 +17,7 @@ export function RevealText({
   as: Tag = "div",
   className,
   delay = 0,
-  stagger = 0.035,
+  stagger = 0.018,
 }: RevealTextProps) {
   const containerRef = useRef<HTMLElement>(null);
   const isInView = useInView(containerRef, { once: true, amount: 0.15 });
@@ -41,11 +41,11 @@ export function RevealText({
         >
           <motion.span
             className="inline-block will-change-transform"
-            initial={{ y: "110%", opacity: 0 }}
-            animate={isInView ? { y: "0%", opacity: 1 } : { y: "110%", opacity: 0 }}
+            initial={{ y: "105%", opacity: 0 }}
+            animate={isInView ? { y: "0%", opacity: 1 } : { y: "105%", opacity: 0 }}
             transition={{
-              duration: 0.68,
-              delay: delay + idx * stagger,
+              duration: 0.34,
+              delay: Math.min(0.12, delay + idx * stagger),
               ease: [0.22, 1, 0.36, 1],
             }}
           >

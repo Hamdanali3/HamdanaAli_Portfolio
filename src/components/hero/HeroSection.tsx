@@ -373,7 +373,7 @@ export function HeroSection({
                 </div>
               </div>
 
-              {/* Concise Factual Profile Rows (NO Core Domains row) */}
+              {/* Concise Factual Profile Rows */}
               <dl className="mt-4 space-y-2.5 text-xs px-1">
                 <div className="flex items-start justify-between gap-4">
                   <dt className="font-mono uppercase tracking-[0.1em] text-ink-muted">
