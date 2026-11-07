@@ -57,18 +57,18 @@ export default function WorkPage() {
         <header className="mx-auto max-w-[1340px] px-4 sm:px-8 pt-8 pb-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
-            <span>PROJECT INDEX · 06 SHIPPED REPOSITORIES</span>
+            <span>PROJECT INDEX · 02 FLAGSHIP PRODUCTION SYSTEMS</span>
           </div>
           <h1 className="mt-4 text-[clamp(2.2rem,4.6vw,4.1rem)] font-extrabold tracking-[-0.038em] leading-[1.03] text-ink">
-            Shipped{" "}
+            Flagship{" "}
             <span className="font-serif italic font-normal text-signal">
               full-stack
-            </span>
-            , mobile &amp; AI case studies.
+            </span>{" "}
+            &amp; AI case studies.
           </h1>
           <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-ink-secondary">
-            Every project below links to its own dedicated architectural case study URL,
-            verified test metrics, interactive simulator, and public GitHub repository.
+            Explore the live deployments, interactive telemetry simulators, and end-to-end
+            system architecture behind Sentinel Chitral and GridPulse.
           </p>
         </header>
 

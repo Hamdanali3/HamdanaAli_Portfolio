@@ -6,10 +6,9 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
+  Cpu,
   ExternalLink,
-  FileText,
   Layers,
-  Sparkles,
 } from "lucide-react";
 import { GitHubMark } from "@/components/ui/GitHubMark";
 import { PROJECTS, type PortfolioProject } from "@/data/portfolio";
@@ -28,17 +27,16 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Synchronize active project card and progress bar on horizontal scroll
   const handleScroll = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = track;
     const maxScroll = scrollWidth - clientWidth;
-    const progress = maxScroll > 0 ? Math.min(Math.max(scrollLeft / maxScroll, 0), 1) : 0;
+    const progress =
+      maxScroll > 0 ? Math.min(Math.max(scrollLeft / maxScroll, 0), 1) : 0;
     setScrollProgress(progress);
 
-    // Calculate which card is closest to the center of the track
     const cards = track.querySelectorAll<HTMLElement>("[data-project-card]");
     if (cards.length === 0) return;
 
@@ -121,242 +119,310 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
     <section
       id="work"
       aria-labelledby={hideHeader ? undefined : "work-heading"}
-      aria-label={hideHeader ? "Selected Work and Case Studies" : undefined}
-      className="relative border-b border-hairline py-16 sm:py-24 overflow-hidden"
+      aria-label={hideHeader ? "Flagship Production Systems" : undefined}
+      className="relative border-b border-hairline py-14 sm:py-20 overflow-hidden"
     >
-      <div className="mx-auto max-w-[1340px] px-4 sm:px-8 space-y-10 sm:space-y-12">
-        {/* Section Header */}
+      {/* Top Section Header */}
+      <div className="mx-auto max-w-[1340px] px-4 sm:px-8">
         {!hideHeader && (
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8">
-            <div className="space-y-3">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-7 mb-8">
+            <div className="space-y-2.5">
               <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
                 <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
-                <span>CHAPTER 02 · SHIPPED PRODUCTS &amp; ARCHITECTURES</span>
+                <span>CHAPTER 02 · FLAGSHIP PRODUCTION SYSTEMS</span>
               </div>
               <h2
                 id="work-heading"
-                className="text-[clamp(2rem,4.2vw,3.75rem)] font-extrabold tracking-[-0.035em] leading-[1.03] text-ink"
+                className="text-[clamp(2rem,4vw,3.35rem)] font-extrabold tracking-[-0.035em] leading-[1.04] text-ink"
               >
-                <RevealText text="Shipped products &" as="span" />{" "}
+                <RevealText text="2 Live cloud platforms &" as="span" />{" "}
                 <span className="font-serif italic font-normal text-signal">
                   interactive
                 </span>{" "}
-                <RevealText text="previews." as="span" delay={0.06} />
+                <RevealText text="simulators." as="span" delay={0.05} />
               </h2>
             </div>
 
-            <div className="max-w-md space-y-2">
-              <p className="text-sm leading-relaxed text-ink-secondary">
-                Explore all 6 real-world platforms, engineering studies, and interactive code
-                simulators. Glide horizontally through the exhibition deck or tap any project tab.
+            <div className="max-w-sm space-y-1.5">
+              <p className="text-xs sm:text-sm leading-relaxed text-ink-secondary">
+                Curated for engineering depth: test the live interactive simulators
+                below or launch the deployed production apps.
               </p>
-              <Link
-                href="/work"
-                className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-signal hover:underline underline-offset-4"
-              >
-                <span>Browse All 6 Dedicated Case Study Pages (/work)</span>
-                <ArrowUpRight className="h-3.5 w-3.5" />
-              </Link>
             </div>
           </div>
         )}
 
-        {/* Quick-Jump Project Tabs Scrubber */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs font-mono text-ink-muted">
-            <span className="flex items-center gap-2 uppercase tracking-[0.14em]">
-              <Sparkles className="h-3.5 w-3.5 text-signal" />
-              <span>HORIZONTAL EXHIBITION DECK · SELECT ANY ARCHITECTURE</span>
-            </span>
-            <span className="hidden sm:inline">Use trackpad or swipe horizontally ⇄</span>
-          </div>
-
+        {/* Flagship Switcher + Navigation Controls */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div
             role="tablist"
-            aria-label="Quick-jump project tabs"
-            className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar"
+            aria-label="Select flagship production system"
+            className="flex flex-wrap items-center gap-2.5"
           >
             {PROJECTS.map((proj, idx) => {
-              const isSelected = activeIndex === idx;
+              const isCurrent = idx === activeIndex;
               return (
                 <button
                   key={proj.id}
-                  type="button"
                   role="tab"
-                  aria-selected={isSelected}
+                  type="button"
+                  aria-selected={isCurrent}
                   onClick={() => scrollToProject(idx)}
-                  data-cursor-label={`0${idx + 1}`}
                   className={cn(
-                    "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 font-mono text-xs transition-all duration-200 cursor-pointer focus:outline-none select-none",
-                    isSelected
-                      ? "border-signal-fill bg-signal-fill text-white font-semibold shadow-[0_4px_16px_rgba(255,79,23,0.35)]"
-                      : "border-hairline bg-surface-1/90 text-ink-secondary hover:border-strong hover:text-ink hover:bg-surface-2"
+                    "group relative inline-flex min-h-11 items-center gap-2.5 rounded-full border px-5 py-2.5 font-mono text-xs transition-all duration-200 cursor-pointer",
+                    isCurrent
+                      ? "border-signal bg-signal-fill text-white font-semibold shadow-[0_0_24px_rgba(255,79,23,0.35)]"
+                      : "border-hairline bg-surface-1/85 text-ink-secondary hover:border-strong hover:text-ink"
                   )}
                 >
                   <span
                     className={cn(
-                      "flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold",
-                      isSelected ? "bg-white/20 text-white" : "text-signal"
+                      "tabular-nums text-[10px] font-bold px-1.5 py-0.5 rounded",
+                      isCurrent
+                        ? "bg-white/20 text-white"
+                        : "bg-surface-2 text-signal"
                     )}
                   >
                     {proj.index}
                   </span>
-                  <span className="truncate">{proj.title}</span>
+                  <span className="font-sans font-bold tracking-tight">
+                    {proj.title}
+                  </span>
+                  <span
+                    className={cn(
+                      "hidden sm:inline text-[10px]",
+                      isCurrent ? "text-white/85" : "text-ink-muted"
+                    )}
+                  >
+                    · {idx === 0 ? "8-Valley Hazard AI" : "177+ MW Fleet Control"}
+                  </span>
                 </button>
               );
             })}
           </div>
-        </div>
 
-        {/* Horizontal Snap-Scroll Exhibition Track */}
+          <div className="flex items-center gap-2">
+            <span className="hidden md:inline font-mono text-[11px] text-ink-muted mr-1">
+              Swipe or switch system ⇄
+            </span>
+            <Magnetic strength={0.18}>
+              <button
+                type="button"
+                onClick={() => stepProject(-1)}
+                disabled={activeIndex === 0}
+                aria-label="Previous flagship project"
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 cursor-pointer",
+                  activeIndex === 0
+                    ? "border-hairline bg-surface-1/40 text-ink-muted/40 cursor-not-allowed"
+                    : "border-strong bg-surface-1 text-ink hover:border-signal hover:text-signal"
+                )}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+            </Magnetic>
+            <Magnetic strength={0.18}>
+              <button
+                type="button"
+                onClick={() => stepProject(1)}
+                disabled={activeIndex === PROJECTS.length - 1}
+                aria-label="Next flagship project"
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-200 cursor-pointer",
+                  activeIndex === PROJECTS.length - 1
+                    ? "border-hairline bg-surface-1/40 text-ink-muted/40 cursor-not-allowed"
+                    : "border-strong bg-surface-1 text-ink hover:border-signal hover:text-signal"
+                )}
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </Magnetic>
+          </div>
+        </div>
+      </div>
+
+      {/* Horizontal Scrollable Snap Track */}
+      <div className="relative w-full">
         <div
           ref={trackRef}
           tabIndex={0}
           onKeyDown={handleKeyDown}
           role="region"
-          aria-label="Horizontal Shipped Projects Carousel. Use left and right arrow keys to navigate."
-          className="flex w-full gap-6 sm:gap-8 overflow-x-auto pb-4 pt-1 scroll-smooth snap-x snap-mandatory no-scrollbar focus:outline-none focus-visible:ring-1 focus-visible:ring-signal rounded-3xl"
+          aria-label="Horizontal Flagship Systems Deck"
+          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar px-4 sm:px-8 md:px-[max(2rem,calc((100vw-1340px)/2+2rem))] pb-4 pt-1 focus:outline-none"
         >
           {PROJECTS.map((project, idx) => {
-            const isSelected = activeIndex === idx;
-
+            const isCurrent = idx === activeIndex;
             return (
               <article
                 key={project.id}
                 data-project-card
-                data-project-id={project.id}
-                className="w-[88vw] max-w-[1100px] shrink-0 snap-center transition-opacity duration-300"
+                aria-label={`${project.index} ${project.title}`}
+                className={cn(
+                  "snap-center shrink-0 w-[90vw] sm:w-[86vw] lg:w-[1160px] max-w-[1160px] transition-all duration-300",
+                  isCurrent ? "opacity-100 scale-100" : "opacity-80 scale-[0.985]"
+                )}
               >
                 <SpotlightCard
                   showFiducials
                   className={cn(
-                    "p-6 sm:p-8 lg:p-10 transition-all duration-300 h-full",
-                    isSelected
-                      ? "border-strong/90 shadow-2xl"
-                      : "border-hairline/80 opacity-90 hover:opacity-100"
+                    "h-full p-5 sm:p-7 lg:p-8 transition-colors duration-300",
+                    isCurrent
+                      ? "border-strong shadow-[0_24px_60px_-24px_rgba(0,0,0,0.45)]"
+                      : "border-hairline"
                   )}
                 >
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-                    {/* Narrative & Telemetry Column */}
-                    <div className="lg:col-span-6 space-y-5">
-                      <div className="flex flex-wrap items-center gap-2.5 font-mono text-[11px]">
-                        <span className="rounded-md bg-signal-fill px-2 py-0.5 font-semibold text-white tabular-nums">
-                          {project.index} / 06
-                        </span>
-                        <span className="uppercase tracking-[0.12em] text-ink-muted">
-                          {project.category}
-                        </span>
-                      </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 lg:gap-8 items-center">
+                    {/* Left 5 Columns: Crisp Pitch + Visual Architecture Flow + Gauges */}
+                    <div className="lg:col-span-5 flex flex-col justify-between space-y-5">
+                      <div className="space-y-3.5">
+                        {/* Project Badge Header */}
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 font-mono text-xs">
+                            <span className="inline-flex shrink-0 whitespace-nowrap items-center justify-center rounded-md bg-signal-fill px-2.5 py-0.5 text-white font-bold">
+                              {project.index} /{" "}
+                              {String(PROJECTS.length).padStart(2, "0")}
+                            </span>
+                            <span className="uppercase tracking-[0.12em] text-ink-muted">
+                              {project.category}
+                            </span>
+                          </div>
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-telemetry/30 bg-telemetry/10 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-telemetry">
+                            <span className="h-1.5 w-1.5 rounded-full bg-telemetry animate-pulse" />
+                            <span>LIVE PRODUCTION</span>
+                          </span>
+                        </div>
 
-                      <div>
-                        <h3 className="text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-ink">
-                          <Link
-                            href={`/work/${project.id}`}
-                            className="hover:text-signal transition-colors"
-                          >
-                            {project.title}
-                          </Link>
-                        </h3>
-                        <p className="mt-1 font-serif italic text-lg sm:text-xl text-ink-secondary">
-                          {project.subtitle}
-                        </p>
-                      </div>
+                        {/* Title & 1-Line Pitch */}
+                        <div>
+                          <h3 className="text-2xl sm:text-3xl font-extrabold tracking-[-0.03em] text-ink">
+                            <Link
+                              href={`/work/${project.id}`}
+                              className="hover:text-signal transition-colors"
+                            >
+                              {project.title}
+                            </Link>
+                          </h3>
+                          <p className="mt-1 text-xs sm:text-sm text-ink-secondary leading-relaxed">
+                            {project.summary}
+                          </p>
+                        </div>
 
-                      <p className="text-sm sm:text-[15px] leading-[1.7] text-ink-secondary line-clamp-3 sm:line-clamp-none">
-                        {project.summary}
-                      </p>
-
-                      {/* Key Metrics Row */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-                        {project.metrics.map((m) => (
-                          <div
-                            key={m.label}
-                            className="rounded-xl border border-hairline bg-canvas/70 px-3 py-2.5"
-                          >
-                            <div className="font-mono text-sm font-bold text-ink tabular-nums">
-                              {m.value}
+                        {/* VISUAL ARCHITECTURE PIPELINE (Replaces Long Prose Paragraphs) */}
+                        {project.visualPipeline && (
+                          <div className="rounded-xl border border-hairline bg-canvas/85 p-3.5 space-y-2.5">
+                            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.12em] text-ink-muted">
+                              <span className="flex items-center gap-1.5 text-signal font-semibold">
+                                <Cpu className="h-3.5 w-3.5" />
+                                <span>SYSTEM ARCHITECTURE PIPELINE</span>
+                              </span>
+                              <span>END-TO-END FLOW</span>
                             </div>
-                            <div className="mt-0.5 text-[11px] leading-snug text-ink-muted truncate">
-                              {m.label}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-2">
+                              {project.visualPipeline.map((node, nodeIdx) => (
+                                <div
+                                  key={node.step}
+                                  className="relative rounded-lg border border-hairline bg-surface-1 p-2.5"
+                                >
+                                  <div className="flex items-center justify-between font-mono text-[9px] text-signal font-bold">
+                                    <span>STAGE {node.step}</span>
+                                    {nodeIdx < project.visualPipeline!.length - 1 && (
+                                      <span className="text-ink-muted">➔</span>
+                                    )}
+                                  </div>
+                                  <div className="mt-0.5 text-xs font-bold text-ink truncate">
+                                    {node.title}
+                                  </div>
+                                  <div className="font-mono text-[10px] text-ink-muted truncate">
+                                    {node.tech}
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           </div>
-                        ))}
+                        )}
+
+                        {/* 4 Visual Metric Gauges with Progress Bars */}
+                        <div className="grid grid-cols-2 gap-2">
+                          {project.metrics.slice(0, 4).map((m) => (
+                            <div
+                              key={m.label}
+                              className="rounded-xl border border-hairline bg-surface-2/60 p-2.5"
+                            >
+                              <div className="font-mono text-sm sm:text-base font-bold text-ink tabular-nums">
+                                {m.value}
+                              </div>
+                              <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-surface-1">
+                                <div
+                                  className="h-full rounded-full bg-signal"
+                                  style={{ width: `${m.fillPercent ?? 95}%` }}
+                                />
+                              </div>
+                              <div className="mt-1 text-[10px] font-mono text-ink-secondary truncate">
+                                {m.label}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
-                      {/* Stack Badges */}
-                      <div className="flex flex-wrap gap-1.5">
-                        {project.stack.slice(0, 6).map((tech) => (
-                          <span
-                            key={tech}
-                            className="rounded-full border border-hairline bg-surface-2/70 px-2.5 py-1 font-mono text-[10px] tracking-[0.04em] text-ink-secondary"
+                      {/* Stack Pills + Direct Recruiter Proof Actions */}
+                      <div className="space-y-3.5 pt-2 border-t border-hairline">
+                        <div className="flex flex-wrap gap-1.5">
+                          {project.stack.map((tech) => (
+                            <span
+                              key={tech}
+                              className="rounded-md border border-hairline bg-canvas px-2.5 py-1 font-mono text-[10px] text-ink-secondary"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          {project.liveUrl && (
+                            <a
+                              href={project.liveUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex min-h-10 items-center gap-2 rounded-full bg-signal-fill px-5 py-2 text-xs font-semibold text-white shadow-sm transition-transform duration-200 hover:scale-[1.02]"
+                            >
+                              <span>Launch Live App</span>
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+
+                          <Link
+                            href={`/work/${project.id}`}
+                            className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-strong bg-surface-2 px-4 py-2 text-xs font-semibold text-ink transition-colors duration-200 hover:border-signal hover:text-signal"
                           >
-                            {tech}
-                          </span>
-                        ))}
-                        {project.stack.length > 6 && (
-                          <span className="rounded-full border border-hairline bg-surface-2/40 px-2 py-1 font-mono text-[10px] text-ink-muted">
-                            +{project.stack.length - 6} more
-                          </span>
-                        )}
-                      </div>
+                            <Layers className="h-3.5 w-3.5 text-signal" />
+                            <span>Architecture &amp; Proof</span>
+                            <ArrowUpRight className="h-3.5 w-3.5" />
+                          </Link>
 
-                      {/* Action Buttons (>= 44px tap targets) */}
-                      <div className="flex flex-wrap items-center gap-2.5 pt-2">
-                        <Link
-                          href={`/work/${project.id}`}
-                          data-cursor-label="READ CASE ↗"
-                          className="inline-flex min-h-11 items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-xs font-semibold text-canvas transition-transform duration-200 hover:scale-[1.02]"
-                        >
-                          <Layers className="h-3.5 w-3.5 text-signal" />
-                          <span>Read Case Study</span>
-                          <ArrowUpRight className="h-3.5 w-3.5" />
-                        </Link>
-
-                        {project.liveUrl && (
                           <a
-                            href={project.liveUrl}
+                            href={project.repoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            data-cursor-label="LIVE APP ↗"
-                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-strong bg-surface-2/80 px-4 py-2.5 text-xs font-semibold text-signal transition-colors duration-200 hover:bg-signal-fill hover:border-signal-fill hover:text-white"
+                            className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-hairline bg-canvas px-3.5 py-2 text-xs font-medium text-ink-secondary transition-colors duration-200 hover:border-strong hover:text-ink"
                           >
-                            <span>Live App</span>
-                            <ExternalLink className="h-3.5 w-3.5" />
+                            <GitHubMark className="h-3.5 w-3.5" />
+                            <span>Code</span>
                           </a>
-                        )}
-
-                        <a
-                          href={project.repoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          data-cursor-label="GITHUB ↗"
-                          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline bg-surface-2/60 px-4 py-2.5 text-xs font-medium text-ink-secondary transition-colors duration-200 hover:border-strong hover:text-ink"
-                        >
-                          <GitHubMark className="h-3.5 w-3.5" />
-                          <span>Source</span>
-                        </a>
-
-                        {project.paperUrl && (
-                          <a
-                            href={project.paperUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-cursor-label="STUDY PDF ↗"
-                            className="inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 py-2.5 font-mono text-[11px] font-medium text-ink-muted underline decoration-hairline underline-offset-4 transition-colors duration-200 hover:text-ink"
-                          >
-                            <FileText className="h-3.5 w-3.5 text-champagne" />
-                            <span>Study PDF ↗</span>
-                          </a>
-                        )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Interactive Live Simulator Column */}
-                    <div className="lg:col-span-6">
-                      <div className="rounded-2xl border border-hairline bg-surface-2/45 p-2 sm:p-3 shadow-inner">
-                        <div className="mb-2 flex items-center justify-between px-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted">
+                    {/* Right 7 Columns: Prominent Live Interactive Simulator Visualization */}
+                    <div className="lg:col-span-7">
+                      <div className="rounded-2xl border border-hairline bg-surface-2/85 p-3 sm:p-5">
+                        <div className="flex items-center justify-between gap-2 pb-3 px-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted">
                           <span>{project.accentTag}</span>
-                          <span className="text-telemetry">● INTERACTIVE PREVIEW</span>
+                          <span className="flex items-center gap-1.5 text-telemetry font-semibold">
+                            <span className="h-1.5 w-1.5 rounded-full bg-telemetry animate-pulse" />
+                            INTERACTIVE LIVE SIMULATOR
+                          </span>
                         </div>
                         {project.simulator && (
                           <ProjectSimulator kind={project.simulator} />
@@ -369,76 +435,40 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
             );
           })}
         </div>
+      </div>
 
-        {/* Bottom Interactive Navigation Controller & Continuous Progress Scrubber */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-hairline pt-6">
-          {/* Active Card Indicator */}
-          <div className="flex items-center gap-2.5 font-mono text-xs">
-            <span className="text-signal font-bold tabular-nums">
-              PROJECT 0{activeIndex + 1} / 06
+      {/* Bottom Progress Bar */}
+      <div className="mx-auto max-w-[1340px] px-4 sm:px-8 mt-4">
+        <div className="flex items-center justify-between gap-4 rounded-2xl border border-hairline bg-surface-1/80 px-4 py-2.5 backdrop-blur-md">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="font-mono text-xs font-bold text-signal tabular-nums">
+              SYSTEM {activeProject.index} /{" "}
+              {String(PROJECTS.length).padStart(2, "0")}
             </span>
-            <span className="text-ink-muted">·</span>
-            <span className="truncate font-semibold uppercase tracking-[0.06em] text-ink">
+            <span className="truncate text-xs font-semibold text-ink">
               {activeProject.title}
             </span>
           </div>
 
-          {/* Continuous Progress Scrubber Bar */}
-          <div className="flex items-center gap-3">
+          <div className="hidden sm:block flex-1 max-w-xs h-1.5 rounded-full bg-surface-2 overflow-hidden">
             <div
-              role="progressbar"
-              aria-label="Horizontal carousel scroll progress"
-              aria-valuenow={Math.round(scrollProgress * 100)}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              className="h-1.5 w-32 sm:w-56 rounded-full bg-surface-2 overflow-hidden"
-            >
-              <div
-                style={{ width: `${Math.max(scrollProgress * 100, 16)}%` }}
-                className="h-full rounded-full bg-signal transition-all duration-150 ease-out"
-              />
-            </div>
-            <span className="font-mono text-[10px] text-ink-muted tabular-nums">
-              {Math.round(scrollProgress * 100)}%
-            </span>
+              className="h-full rounded-full bg-gradient-to-r from-signal to-champagne transition-all duration-200"
+              style={{
+                width: `${Math.max(
+                  ((activeIndex + 1) / PROJECTS.length) * 100,
+                  scrollProgress * 100
+                )}%`,
+              }}
+            />
           </div>
 
-          {/* Prev / Next Controls & Deep Link */}
-          <div className="flex items-center gap-2.5">
-            <Magnetic strength={0.2}>
-              <button
-                type="button"
-                onClick={() => stepProject(-1)}
-                disabled={activeIndex === 0}
-                aria-label="Previous project card"
-                data-cursor-label="PREV"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-surface-1 text-ink transition-all duration-200 hover:border-strong hover:bg-surface-2 disabled:opacity-30 disabled:pointer-events-none cursor-pointer focus:outline-none"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </button>
-            </Magnetic>
-
-            <Magnetic strength={0.2}>
-              <button
-                type="button"
-                onClick={() => stepProject(1)}
-                disabled={activeIndex === PROJECTS.length - 1}
-                aria-label="Next project card"
-                data-cursor-label="NEXT"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-surface-1 text-ink transition-all duration-200 hover:border-strong hover:bg-surface-2 disabled:opacity-30 disabled:pointer-events-none cursor-pointer focus:outline-none"
-              >
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </Magnetic>
-
-            <Link
-              href="/work"
-              className="ml-2 inline-flex items-center gap-1 font-mono text-xs font-semibold text-signal hover:underline underline-offset-4"
-            >
-              <span>View All 6 Cases</span>
-              <ArrowUpRight className="h-3 w-3" />
-            </Link>
-          </div>
+          <Link
+            href="/work"
+            className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-signal hover:underline underline-offset-4"
+          >
+            <span>Open Dedicated Case Studies (/work)</span>
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
       </div>
     </section>

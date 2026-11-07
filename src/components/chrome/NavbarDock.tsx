@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Command, Monitor, Moon, Sun, SlidersHorizontal } from "lucide-react";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { cn } from "@/lib/utils";
-import { PROFILE } from "@/data/portfolio";
+import { PROFILE, PROJECTS } from "@/data/portfolio";
 
 export type ThemeChoice = "system" | "dark" | "light";
 
@@ -66,7 +66,12 @@ export function NavbarDock({
       count?: string;
     }[] = [
       { id: "overview", href: "/", label: "Overview" },
-      { id: "work", href: "/work", label: "Work", count: "06" },
+      {
+        id: "work",
+        href: "/work",
+        label: "Work",
+        count: String(PROJECTS.length).padStart(2, "0"),
+      },
     ];
     if (hasEventsSection) {
       items.push({
