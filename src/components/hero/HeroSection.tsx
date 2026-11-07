@@ -330,11 +330,11 @@ export function HeroSection({
                 <Magnetic strength={0.16}>
                   <Link
                     href="/field-notes"
-                    data-cursor-label="GALLERY"
+                    data-cursor-label="EVENTS"
                     className="inline-flex min-h-11 items-center gap-2 rounded-full border border-strong bg-surface-1/90 px-5 py-3 text-sm font-semibold text-ink transition-colors duration-200 hover:bg-surface-2"
                   >
                     <Camera className="h-4 w-4 text-signal" />
-                    <span>Field Notes &amp; Gallery</span>
+                    <span>Events &amp; Hackathons</span>
                   </Link>
                 </Magnetic>
               )}

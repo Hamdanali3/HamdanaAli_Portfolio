@@ -336,7 +336,7 @@ export function ContactFooter({
                     href="/field-notes"
                     className="hover:text-signal transition-colors"
                   >
-                    03 · Field Notes
+                    03 · Events &amp; Hackathons
                   </Link>
                 </li>
                 <li>

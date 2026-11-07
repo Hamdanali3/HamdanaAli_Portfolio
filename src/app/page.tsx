@@ -58,7 +58,7 @@ export const metadata: Metadata = {
 };
 
 export default function PortfolioPage() {
-  const hasEventsSection = EVENTS.length > 0;
+  const hasEventsSection = true;
 
   return (
     <SiteShell activeRoute="/" showSpine>

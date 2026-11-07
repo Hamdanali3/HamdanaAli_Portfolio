@@ -72,7 +72,7 @@ export function NavbarDock({
       items.push({
         id: "field-notes",
         href: "/field-notes",
-        label: "Field Notes",
+        label: "Events",
       });
     }
     items.push(

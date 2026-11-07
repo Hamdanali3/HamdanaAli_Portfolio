@@ -139,8 +139,8 @@ export function CommandPalette({
             {
               id: "page-field-notes",
               group: "Pages",
-              title: "03 · Field Notes & Gallery",
-              subtitle: "Top 5 featured event highlights & photo lightbox (/field-notes)",
+              title: "03 · Tech Events & Hackathons",
+              subtitle: "Developer hackathons, webinars & event gallery (/field-notes)",
               iconKey: "camera" as const,
               kind: { type: "route" as const, href: "/field-notes" },
             },

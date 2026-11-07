@@ -9,7 +9,6 @@ import {
 } from "@/components/chrome/NavbarDock";
 import { ScrollProgressAndSpine } from "@/components/chrome/ScrollProgressAndSpine";
 import { CustomCursor } from "@/components/chrome/CustomCursor";
-import { EVENTS } from "@/content/events";
 
 const CommandPalette = dynamic(
   () =>
@@ -70,7 +69,7 @@ export function SiteShell({
   const [activeSection, setActiveSection] = useState("overview");
   const [commandOpen, setCommandOpen] = useState(false);
 
-  const hasEventsSection = EVENTS.length > 0;
+  const hasEventsSection = true;
 
   const themeChoice = useSyncExternalStore(
     subscribeTheme,
