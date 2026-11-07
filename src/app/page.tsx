@@ -9,6 +9,7 @@ import { ResearchSpotlight } from "@/components/sections/ResearchSpotlight";
 import { ArchitectureBento } from "@/components/sections/ArchitectureBento";
 import { JourneyTimeline } from "@/components/sections/JourneyTimeline";
 import { ContactFooter } from "@/components/sections/ContactFooter";
+import { ChapterTransitionSeam } from "@/components/navigation/ChapterTransitionSeam";
 import { EVENTS } from "@/content/events";
 import { DEFAULT_OG_IMAGE, SITE_NAME, absoluteUrl } from "@/lib/site";
 
@@ -65,11 +66,46 @@ export default function PortfolioPage() {
       <main id="main-content" className="flex-1">
         <HeroSection hasEventsSection={hasEventsSection} />
         <VelocityMarquee />
+        <ChapterTransitionSeam
+          fromChapter="01"
+          fromName="Overview"
+          toChapter="02"
+          toName="Selected Work"
+          toId="work"
+        />
         <WorkShowcase />
+        <ChapterTransitionSeam
+          fromChapter="02"
+          fromName="Selected Work"
+          toChapter="03"
+          toName="Tech Events & Hackathons"
+          toId="field-notes"
+        />
         <FieldNotesGallery events={EVENTS} />
         {ENABLE_RESEARCH_SPOTLIGHT && <ResearchSpotlight />}
+        <ChapterTransitionSeam
+          fromChapter="03"
+          fromName="Events & Hackathons"
+          toChapter="04"
+          toName="Capabilities & Stack"
+          toId="architecture"
+        />
         <ArchitectureBento />
+        <ChapterTransitionSeam
+          fromChapter="04"
+          fromName="Capabilities & Stack"
+          toChapter="05"
+          toName="Engineering Journey"
+          toId="journey"
+        />
         <JourneyTimeline />
+        <ChapterTransitionSeam
+          fromChapter="05"
+          fromName="Engineering Journey"
+          toChapter="06"
+          toName="Collaboration"
+          toId="contact"
+        />
       </main>
       <ContactFooter />
     </SiteShell>

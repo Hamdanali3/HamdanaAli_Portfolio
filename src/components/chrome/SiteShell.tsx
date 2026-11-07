@@ -9,6 +9,7 @@ import {
 } from "@/components/chrome/NavbarDock";
 import { ScrollProgressAndSpine } from "@/components/chrome/ScrollProgressAndSpine";
 import { CustomCursor } from "@/components/chrome/CustomCursor";
+import { ChapterTransitionHUD } from "@/components/navigation/ChapterTransitionHUD";
 
 const CommandPalette = dynamic(
   () =>
@@ -132,7 +133,16 @@ export function SiteShell({
         onSelectTheme={handleSelectTheme}
       />
 
-      {children}
+      <div className="flex-1 flex flex-col animate-page-enter">
+        {children}
+      </div>
+
+      {showSpine && (
+        <ChapterTransitionHUD
+          activeSection={activeSection}
+          onSectionSelect={setActiveSection}
+        />
+      )}
 
       {commandOpen && (
         <CommandPalette

@@ -112,6 +112,17 @@ export function ScrollProgressAndSpine({
               <a
                 key={sec.id}
                 href={`#${sec.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const target = document.getElementById(sec.id);
+                  if (target) {
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                    target.classList.remove("animate-chapter-arrival");
+                    void target.offsetWidth;
+                    target.classList.add("animate-chapter-arrival");
+                    setTimeout(() => target.classList.remove("animate-chapter-arrival"), 1000);
+                  }
+                }}
                 aria-label={`${sec.index} ${sec.label}`}
                 className="group flex min-h-11 min-w-11 items-center justify-end gap-2 px-1 text-right focus:outline-none"
               >
