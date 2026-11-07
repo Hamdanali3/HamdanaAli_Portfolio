@@ -525,3 +525,12 @@ dialog.portfolio-dialog::backdrop {
     animation: none !important;
   }
 }
+
+/* Utility to hide native scrollbar on horizontal swipe tracks while preserving native inertia */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

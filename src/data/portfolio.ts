@@ -1,4 +1,10 @@
-export type SimulatorKind = "sentinel" | "gridpulse" | "edge-iiot" | "uniselection";
+export type SimulatorKind =
+  | "sentinel"
+  | "gridpulse"
+  | "edge-iiot"
+  | "uniselection"
+  | "taskflow"
+  | "crm";
 
 export interface ProjectScreenshot {
   label: string;
@@ -355,6 +361,7 @@ export const PROJECTS: PortfolioProject[] = [
     category: "Backend & Full-Stack Web App",
     year: "2026",
     featured: false,
+    simulator: "taskflow",
     repoUrl: "https://github.com/Hamdanali3/HindukushSoft-Technologies-Internship/tree/main/taskflow",
     accentTag: "LARAVEL 12 · PHP 8.3 · 16/16 PHPUNIT",
     summary:
@@ -370,8 +377,10 @@ export const PROJECTS: PortfolioProject[] = [
     ],
     stack: ["Laravel 12", "PHP 8.3", "Laravel Sanctum", "Blade", "MySQL / SQLite", "PHPUnit", "REST API"],
     metrics: [
-      { value: "16 / 16", label: "Passing PHPUnit Feature Tests" },
-      { value: "3 Policies", label: "Granular RBAC Resource Gates" },
+      { value: "16 / 16", label: "Passing PHPUnit Tests" },
+      { value: "3 Policies", label: "Granular RBAC Gates" },
+      { value: "< 45 ms", label: "Sanctum REST Latency" },
+      { value: "Blade + API", label: "Dual-Surface Engine" },
     ],
     screenshots: [],
   },
@@ -383,6 +392,7 @@ export const PROJECTS: PortfolioProject[] = [
     category: "Frontend State, Routing & Web Foundations",
     year: "2026",
     featured: false,
+    simulator: "crm",
     repoUrl: "https://github.com/Hamdanali3/Full-stack-programmingg-lab",
     accentTag: "REACT ROUTING · CUSTOM CRM · TYPESCRIPT",
     summary:
@@ -398,7 +408,9 @@ export const PROJECTS: PortfolioProject[] = [
     stack: ["React", "TypeScript", "JavaScript (ES6+)", "React Router", "HTML5 & CSS3"],
     metrics: [
       { value: "CRM App", label: "Full-Term Capstone Build" },
-      { value: "7+ Labs", label: "Progressive UI & State Modules" },
+      { value: "7+ Labs", label: "State & Routing Modules" },
+      { value: "React 19", label: "Component Lifecycle Engine" },
+      { value: "TypeScript", label: "Strict State Contracts" },
     ],
     screenshots: [],
   },

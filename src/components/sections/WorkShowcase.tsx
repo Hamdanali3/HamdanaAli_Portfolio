@@ -1,11 +1,22 @@
-import React from "react";
+"use client";
+
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ExternalLink, FileText, Layers } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  ExternalLink,
+  FileText,
+  Layers,
+  Sparkles,
+} from "lucide-react";
 import { GitHubMark } from "@/components/ui/GitHubMark";
-import { PROJECTS } from "@/data/portfolio";
+import { PROJECTS, type PortfolioProject } from "@/data/portfolio";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { RevealText } from "@/components/ui/RevealText";
 import { ProjectSimulator } from "@/components/simulators/ProjectSimulators";
+import { Magnetic } from "@/components/ui/Magnetic";
 import { cn } from "@/lib/utils";
 
 interface WorkShowcaseProps {
@@ -13,20 +24,110 @@ interface WorkShowcaseProps {
 }
 
 export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
-  const featured = PROJECTS.filter((p) => p.featured);
-  const archive = PROJECTS.filter((p) => !p.featured);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Synchronize active project card and progress bar on horizontal scroll
+  const handleScroll = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = track;
+    const maxScroll = scrollWidth - clientWidth;
+    const progress = maxScroll > 0 ? Math.min(Math.max(scrollLeft / maxScroll, 0), 1) : 0;
+    setScrollProgress(progress);
+
+    // Calculate which card is closest to the center of the track
+    const cards = track.querySelectorAll<HTMLElement>("[data-project-card]");
+    if (cards.length === 0) return;
+
+    const trackCenter = scrollLeft + clientWidth / 2;
+    let closestIndex = 0;
+    let minDistance = Infinity;
+
+    cards.forEach((card, idx) => {
+      const cardCenter = card.offsetLeft + card.clientWidth / 2;
+      const distance = Math.abs(trackCenter - cardCenter);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIndex = idx;
+      }
+    });
+
+    setActiveIndex(closestIndex);
+  }, []);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    let rafId = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(handleScroll);
+    };
+
+    track.addEventListener("scroll", onScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      track.removeEventListener("scroll", onScroll);
+    };
+  }, [handleScroll]);
+
+  const scrollToProject = useCallback((index: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const cards = track.querySelectorAll<HTMLElement>("[data-project-card]");
+    const targetCard = cards[index];
+    if (!targetCard) return;
+
+    const targetOffset =
+      targetCard.offsetLeft - (track.clientWidth - targetCard.clientWidth) / 2;
+
+    track.scrollTo({
+      left: Math.max(targetOffset, 0),
+      behavior: "smooth",
+    });
+  }, []);
+
+  const stepProject = useCallback(
+    (direction: -1 | 1) => {
+      const nextIndex = Math.min(
+        Math.max(activeIndex + direction, 0),
+        PROJECTS.length - 1
+      );
+      scrollToProject(nextIndex);
+    },
+    [activeIndex, scrollToProject]
+  );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      stepProject(1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      stepProject(-1);
+    }
+  };
+
+  const activeProject: PortfolioProject = PROJECTS[activeIndex] ?? PROJECTS[0];
 
   return (
     <section
       id="work"
       aria-labelledby={hideHeader ? undefined : "work-heading"}
       aria-label={hideHeader ? "Selected Work and Case Studies" : undefined}
-      className="relative border-b border-hairline py-16 sm:py-24"
+      className="relative border-b border-hairline py-16 sm:py-24 overflow-hidden"
     >
-      <div className="mx-auto max-w-[1340px] px-4 sm:px-8">
+      <div className="mx-auto max-w-[1340px] px-4 sm:px-8 space-y-10 sm:space-y-12">
         {/* Section Header */}
         {!hideHeader && (
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8 mb-14">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-hairline pb-8">
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-signal/25 bg-signal/10 px-3.5 py-1 text-xs font-mono font-medium text-signal shadow-sm backdrop-blur-sm">
                 <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse" />
@@ -43,41 +144,104 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
                 <RevealText text="previews." as="span" delay={0.06} />
               </h2>
             </div>
+
             <div className="max-w-md space-y-2">
               <p className="text-sm leading-relaxed text-ink-secondary">
-                Every featured card embeds a live interactive preview modeled on the real codebase.
-                Open any project page to inspect its architecture, test metrics, and repository links.
+                Explore all 6 real-world platforms, engineering studies, and interactive code
+                simulators. Glide horizontally through the exhibition deck or tap any project tab.
               </p>
               <Link
                 href="/work"
                 className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-signal hover:underline underline-offset-4"
               >
-                <span>Browse All 6 Project URLs (/work)</span>
+                <span>Browse All 6 Dedicated Case Study Pages (/work)</span>
                 <ArrowUpRight className="h-3.5 w-3.5" />
               </Link>
             </div>
           </div>
         )}
 
-        {/* 4 Flagship Interactive Case Studies */}
-        <div className="space-y-10">
-          {featured.map((project, idx) => {
-            const isEven = idx % 2 === 1;
+        {/* Quick-Jump Project Tabs Scrubber */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between text-xs font-mono text-ink-muted">
+            <span className="flex items-center gap-2 uppercase tracking-[0.14em]">
+              <Sparkles className="h-3.5 w-3.5 text-signal" />
+              <span>HORIZONTAL EXHIBITION DECK · SELECT ANY ARCHITECTURE</span>
+            </span>
+            <span className="hidden sm:inline">Use trackpad or swipe horizontally ⇄</span>
+          </div>
+
+          <div
+            role="tablist"
+            aria-label="Quick-jump project tabs"
+            className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar"
+          >
+            {PROJECTS.map((proj, idx) => {
+              const isSelected = activeIndex === idx;
+              return (
+                <button
+                  key={proj.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelected}
+                  onClick={() => scrollToProject(idx)}
+                  data-cursor-label={`0${idx + 1}`}
+                  className={cn(
+                    "flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-1.5 font-mono text-xs transition-all duration-200 cursor-pointer focus:outline-none select-none",
+                    isSelected
+                      ? "border-signal-fill bg-signal-fill text-white font-semibold shadow-[0_4px_16px_rgba(255,79,23,0.35)]"
+                      : "border-hairline bg-surface-1/90 text-ink-secondary hover:border-strong hover:text-ink hover:bg-surface-2"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold",
+                      isSelected ? "bg-white/20 text-white" : "text-signal"
+                    )}
+                  >
+                    {proj.index}
+                  </span>
+                  <span className="truncate">{proj.title}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Horizontal Snap-Scroll Exhibition Track */}
+        <div
+          ref={trackRef}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          role="region"
+          aria-label="Horizontal Shipped Projects Carousel. Use left and right arrow keys to navigate."
+          className="flex w-full gap-6 sm:gap-8 overflow-x-auto pb-4 pt-1 scroll-smooth snap-x snap-mandatory no-scrollbar focus:outline-none focus-visible:ring-1 focus-visible:ring-signal rounded-3xl"
+        >
+          {PROJECTS.map((project, idx) => {
+            const isSelected = activeIndex === idx;
 
             return (
-              <article key={project.id}>
-                <SpotlightCard showFiducials className="p-6 sm:p-8 lg:p-10">
+              <article
+                key={project.id}
+                data-project-card
+                data-project-id={project.id}
+                className="w-[88vw] max-w-[1100px] shrink-0 snap-center transition-opacity duration-300"
+              >
+                <SpotlightCard
+                  showFiducials
+                  className={cn(
+                    "p-6 sm:p-8 lg:p-10 transition-all duration-300 h-full",
+                    isSelected
+                      ? "border-strong/90 shadow-2xl"
+                      : "border-hairline/80 opacity-90 hover:opacity-100"
+                  )}
+                >
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-                    {/* Narrative Column */}
-                    <div
-                      className={cn(
-                        "lg:col-span-6 space-y-5",
-                        isEven && "lg:order-2"
-                      )}
-                    >
+                    {/* Narrative & Telemetry Column */}
+                    <div className="lg:col-span-6 space-y-5">
                       <div className="flex flex-wrap items-center gap-2.5 font-mono text-[11px]">
                         <span className="rounded-md bg-signal-fill px-2 py-0.5 font-semibold text-white tabular-nums">
-                          {project.index}
+                          {project.index} / 06
                         </span>
                         <span className="uppercase tracking-[0.12em] text-ink-muted">
                           {project.category}
@@ -98,7 +262,7 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
                         </p>
                       </div>
 
-                      <p className="text-sm sm:text-[15px] leading-[1.7] text-ink-secondary">
+                      <p className="text-sm sm:text-[15px] leading-[1.7] text-ink-secondary line-clamp-3 sm:line-clamp-none">
                         {project.summary}
                       </p>
 
@@ -112,7 +276,7 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
                             <div className="font-mono text-sm font-bold text-ink tabular-nums">
                               {m.value}
                             </div>
-                            <div className="mt-0.5 text-[11px] leading-snug text-ink-muted">
+                            <div className="mt-0.5 text-[11px] leading-snug text-ink-muted truncate">
                               {m.label}
                             </div>
                           </div>
@@ -121,7 +285,7 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
 
                       {/* Stack Badges */}
                       <div className="flex flex-wrap gap-1.5">
-                        {project.stack.map((tech) => (
+                        {project.stack.slice(0, 6).map((tech) => (
                           <span
                             key={tech}
                             className="rounded-full border border-hairline bg-surface-2/70 px-2.5 py-1 font-mono text-[10px] tracking-[0.04em] text-ink-secondary"
@@ -129,6 +293,11 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
                             {tech}
                           </span>
                         ))}
+                        {project.stack.length > 6 && (
+                          <span className="rounded-full border border-hairline bg-surface-2/40 px-2 py-1 font-mono text-[10px] text-ink-muted">
+                            +{project.stack.length - 6} more
+                          </span>
+                        )}
                       </div>
 
                       {/* Action Buttons (>= 44px tap targets) */}
@@ -183,13 +352,8 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
                     </div>
 
                     {/* Interactive Live Simulator Column */}
-                    <div
-                      className={cn(
-                        "lg:col-span-6",
-                        isEven && "lg:order-1"
-                      )}
-                    >
-                      <div className="rounded-2xl border border-hairline bg-surface-2/45 p-2 sm:p-3">
+                    <div className="lg:col-span-6">
+                      <div className="rounded-2xl border border-hairline bg-surface-2/45 p-2 sm:p-3 shadow-inner">
                         <div className="mb-2 flex items-center justify-between px-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted">
                           <span>{project.accentTag}</span>
                           <span className="text-telemetry">● INTERACTIVE PREVIEW</span>
@@ -206,67 +370,74 @@ export function WorkShowcase({ hideHeader = false }: WorkShowcaseProps) {
           })}
         </div>
 
-        {/* Engineering Archive Sub-Grid (Projects 05 & 06) */}
-        <div className="mt-14 pt-12 border-t border-hairline">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
-            <h3 className="font-mono text-xs uppercase tracking-[0.16em] text-ink-muted">
-              INTERNSHIP &amp; FULL-STACK ARCHIVE (05 - 06)
-            </h3>
-            <span className="font-mono text-[11px] text-ink-muted">
-              Open any card to view its dedicated case study page
+        {/* Bottom Interactive Navigation Controller & Continuous Progress Scrubber */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-hairline pt-6">
+          {/* Active Card Indicator */}
+          <div className="flex items-center gap-2.5 font-mono text-xs">
+            <span className="text-signal font-bold tabular-nums">
+              PROJECT 0{activeIndex + 1} / 06
+            </span>
+            <span className="text-ink-muted">·</span>
+            <span className="truncate font-semibold uppercase tracking-[0.06em] text-ink">
+              {activeProject.title}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {archive.map((proj) => (
-              <SpotlightCard
-                key={proj.id}
-                enableTilt
-                cursorLabel="READ CASE ↗"
-                className="p-6 sm:p-7"
-              >
-                <div className="flex flex-col justify-between h-full space-y-5">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between font-mono text-[11px]">
-                      <span className="text-signal font-semibold">
-                        {proj.index} · {proj.accentTag}
-                      </span>
-                      <ArrowUpRight className="h-4 w-4 text-ink-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-signal" />
-                    </div>
-                    <h4 className="text-xl font-bold tracking-tight text-ink">
-                      <Link
-                        href={`/work/${proj.id}`}
-                        className="hover:text-signal transition-colors"
-                      >
-                        {proj.title}
-                      </Link>
-                    </h4>
-                    <p className="text-sm leading-relaxed text-ink-secondary">
-                      {proj.summary}
-                    </p>
-                  </div>
+          {/* Continuous Progress Scrubber Bar */}
+          <div className="flex items-center gap-3">
+            <div
+              role="progressbar"
+              aria-label="Horizontal carousel scroll progress"
+              aria-valuenow={Math.round(scrollProgress * 100)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              className="h-1.5 w-32 sm:w-56 rounded-full bg-surface-2 overflow-hidden"
+            >
+              <div
+                style={{ width: `${Math.max(scrollProgress * 100, 16)}%` }}
+                className="h-full rounded-full bg-signal transition-all duration-150 ease-out"
+              />
+            </div>
+            <span className="font-mono text-[10px] text-ink-muted tabular-nums">
+              {Math.round(scrollProgress * 100)}%
+            </span>
+          </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4">
-                    <div className="flex flex-wrap gap-1.5">
-                      {proj.stack.slice(0, 4).map((t) => (
-                        <span
-                          key={t}
-                          className="rounded-full border border-hairline bg-canvas px-2.5 py-0.5 font-mono text-[10px] text-ink-muted"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <Link
-                      href={`/work/${proj.id}`}
-                      className="font-mono text-[11px] font-semibold text-ink hover:text-signal transition-colors"
-                    >
-                      Read Case Study →
-                    </Link>
-                  </div>
-                </div>
-              </SpotlightCard>
-            ))}
+          {/* Prev / Next Controls & Deep Link */}
+          <div className="flex items-center gap-2.5">
+            <Magnetic strength={0.2}>
+              <button
+                type="button"
+                onClick={() => stepProject(-1)}
+                disabled={activeIndex === 0}
+                aria-label="Previous project card"
+                data-cursor-label="PREV"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-surface-1 text-ink transition-all duration-200 hover:border-strong hover:bg-surface-2 disabled:opacity-30 disabled:pointer-events-none cursor-pointer focus:outline-none"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+            </Magnetic>
+
+            <Magnetic strength={0.2}>
+              <button
+                type="button"
+                onClick={() => stepProject(1)}
+                disabled={activeIndex === PROJECTS.length - 1}
+                aria-label="Next project card"
+                data-cursor-label="NEXT"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline bg-surface-1 text-ink transition-all duration-200 hover:border-strong hover:bg-surface-2 disabled:opacity-30 disabled:pointer-events-none cursor-pointer focus:outline-none"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </Magnetic>
+
+            <Link
+              href="/work"
+              className="ml-2 inline-flex items-center gap-1 font-mono text-xs font-semibold text-signal hover:underline underline-offset-4"
+            >
+              <span>View All 6 Cases</span>
+              <ArrowUpRight className="h-3 w-3" />
+            </Link>
           </div>
         </div>
       </div>

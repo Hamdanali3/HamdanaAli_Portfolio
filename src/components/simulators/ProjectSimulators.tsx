@@ -467,6 +467,207 @@ function UniSelectionSimulator() {
   );
 }
 
+/* ============================================================================
+ * 5. TASKFLOW - DUAL-SURFACE KANBAN & SANCTUM REST API PROBE SIMULATOR
+ * ============================================================================ */
+const SPRINT_COLUMNS = [
+  {
+    name: "Backlog",
+    tasks: ["PRD-04: Multi-tenant tenant scoping", "FEAT-12: Audit trail migrations"],
+    color: "text-ink-muted",
+  },
+  {
+    name: "In Progress",
+    tasks: ["AUTH-08: Sanctum bearer token gates", "KAN-14: Real-time Blade event bus"],
+    color: "text-signal",
+  },
+  {
+    name: "Done",
+    tasks: ["POL-01: ProjectPolicy RBAC invariants", "TEST-16: 16/16 PHPUnit feature suite"],
+    color: "text-telemetry",
+  },
+] as const;
+
+function TaskFlowSimulator() {
+  const [colIdx, setColIdx] = useState(1);
+  const [probing, setProbing] = useState(false);
+  const [probeResult, setProbeResult] = useState<{
+    latency: number;
+    status: number;
+    gate: string;
+  } | null>(null);
+
+  const activeCol = SPRINT_COLUMNS[colIdx];
+
+  const runSanctumProbe = () => {
+    if (probing) return;
+    setProbing(true);
+    setProbeResult(null);
+    setTimeout(() => {
+      setProbing(false);
+      setProbeResult({
+        latency: 38,
+        status: 200,
+        gate: "ProjectPolicy::update -> GRANTED",
+      });
+    }, 320);
+  };
+
+  return (
+    <div
+      data-cursor-label="INTERACT"
+      className="rounded-xl border border-hairline bg-canvas/90 p-4 sm:p-5 space-y-3.5"
+    >
+      <div className="flex items-center justify-between border-b border-hairline pb-3">
+        <div className="flex items-center gap-2">
+          <Radio className="h-4 w-4 text-signal" />
+          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink">
+            TASKFLOW · SANCTUM REST &amp; KANBAN
+          </span>
+        </div>
+        <span className="font-mono text-[10px] text-telemetry">16/16 PHPUNIT</span>
+      </div>
+
+      <div className="grid grid-cols-3 gap-1.5 rounded-xl border border-hairline bg-surface-1 p-1 font-mono text-[10px]">
+        {SPRINT_COLUMNS.map((col, idx) => (
+          <button
+            key={col.name}
+            type="button"
+            aria-pressed={colIdx === idx}
+            onClick={() => setColIdx(idx)}
+            className={cn(
+              "min-h-11 rounded-lg py-2 transition-colors duration-200 cursor-pointer text-center",
+              colIdx === idx
+                ? "bg-signal-fill text-white font-semibold"
+                : "text-ink-secondary hover:text-ink"
+            )}
+          >
+            {col.name} ({col.tasks.length})
+          </button>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-hairline bg-surface-1 p-3 space-y-2">
+        <div className="flex items-center justify-between font-mono text-[10px] text-ink-muted">
+          <span>{activeCol.name.toUpperCase()} COLUMN TASKS</span>
+          <span className="text-telemetry">RBAC Guarded</span>
+        </div>
+        {activeCol.tasks.map((task) => (
+          <div
+            key={task}
+            className="flex items-center gap-2 rounded-lg border border-hairline/60 bg-canvas px-3 py-2 text-xs text-ink"
+          >
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-telemetry" />
+            <span className="truncate font-mono text-[11px]">{task}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-2">
+        <button
+          type="button"
+          onClick={runSanctumProbe}
+          disabled={probing}
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-signal-fill px-4 py-2 text-xs font-semibold text-white shadow-sm transition-transform duration-200 hover:scale-[1.01] active:scale-[0.99] cursor-pointer disabled:opacity-50"
+        >
+          <Zap className="h-3.5 w-3.5" />
+          <span>
+            {probing ? "Probing Sanctum REST API..." : "Probe Sanctum RBAC Endpoint"}
+          </span>
+        </button>
+
+        {probeResult && (
+          <div className="flex items-center justify-between rounded-lg border border-telemetry/30 bg-telemetry/10 px-3 py-2 font-mono text-[10px] text-telemetry">
+            <span>HTTP {probeResult.status} OK · {probeResult.latency} ms</span>
+            <span>{probeResult.gate}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================================
+ * 6. FULL-STACK CRM - PIPELINE STAGE & LEAD SCORING SIMULATOR
+ * ============================================================================ */
+const CRM_STAGES = [
+  { name: "Prospects", count: 18, value: "$42,500", winProb: 25 },
+  { name: "Demo Completed", count: 9, value: "$84,000", winProb: 55 },
+  { name: "Contract Sent", count: 4, value: "$126,000", winProb: 85 },
+  { name: "Closed Won", count: 7, value: "$182,500", winProb: 100 },
+] as const;
+
+function CrmSimulator() {
+  const [stageIdx, setStageIdx] = useState(1);
+  const stage = CRM_STAGES[stageIdx];
+
+  return (
+    <div
+      data-cursor-label="INTERACT"
+      className="rounded-xl border border-hairline bg-canvas/90 p-4 sm:p-5 space-y-3.5"
+    >
+      <div className="flex items-center justify-between border-b border-hairline pb-3">
+        <div className="flex items-center gap-2">
+          <Activity className="h-4 w-4 text-signal" />
+          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-ink">
+            CRM SUITE · PIPELINE &amp; STATE LAB
+          </span>
+        </div>
+        <span className="font-mono text-[10px] text-telemetry">REACT 19 SPA</span>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 rounded-xl border border-hairline bg-surface-1 p-1 font-mono text-[10px]">
+        {CRM_STAGES.map((s, idx) => (
+          <button
+            key={s.name}
+            type="button"
+            aria-pressed={stageIdx === idx}
+            onClick={() => setStageIdx(idx)}
+            className={cn(
+              "min-h-11 rounded-lg px-2 py-2 transition-colors duration-200 cursor-pointer text-center",
+              stageIdx === idx
+                ? "bg-signal-fill text-white font-semibold"
+                : "text-ink-secondary hover:text-ink"
+            )}
+          >
+            {s.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2.5">
+        <div className="rounded-xl border border-hairline bg-surface-1 p-3">
+          <div className="font-mono text-[10px] text-ink-muted">ACTIVE OPPORTUNITIES</div>
+          <div className="mt-1 font-mono text-2xl font-bold text-ink tabular-nums">
+            {stage.count}{" "}
+            <span className="text-xs font-normal text-ink-muted">Deals</span>
+          </div>
+          <div className="mt-0.5 font-mono text-[10px] text-ink-secondary">
+            Weighted Win: {stage.winProb}%
+          </div>
+        </div>
+        <div className="rounded-xl border border-hairline bg-surface-1 p-3">
+          <div className="font-mono text-[10px] text-ink-muted">STAGE PIPELINE VOLUME</div>
+          <div className="mt-1 font-mono text-2xl font-bold text-signal tabular-nums">
+            {stage.value}
+          </div>
+          <div className="mt-0.5 font-mono text-[10px] text-ink-secondary">
+            Strict State Lifecycle
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between rounded-lg border border-hairline bg-surface-1 px-3 py-2 text-xs text-ink-secondary">
+        <span className="flex items-center gap-1.5 truncate">
+          <Sparkles className="h-3.5 w-3.5 shrink-0 text-champagne" />
+          <span className="truncate">React State Lifecycle &amp; Modular Router</span>
+        </span>
+        <span className="shrink-0 font-mono text-[10px] text-telemetry ml-2">7+ Lab Modules</span>
+      </div>
+    </div>
+  );
+}
+
 export function ProjectSimulator({ kind }: { kind: SimulatorKind }) {
   switch (kind) {
     case "sentinel":
@@ -477,6 +678,10 @@ export function ProjectSimulator({ kind }: { kind: SimulatorKind }) {
       return <EdgeIIoTSimulator />;
     case "uniselection":
       return <UniSelectionSimulator />;
+    case "taskflow":
+      return <TaskFlowSimulator />;
+    case "crm":
+      return <CrmSimulator />;
     default:
       return (
         <div className="p-4 flex items-center gap-2 font-mono text-xs text-ink-muted">
